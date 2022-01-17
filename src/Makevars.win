@@ -1,2 +1,0 @@
-# gfortran f90 compilation and linking specs
-PKG_LIBS=$(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
