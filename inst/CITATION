@@ -1,0 +1,10 @@
+year <- sub("-.*", "", meta$Date)
+vers <- sprintf("R package version %s", meta$Version)
+
+bibentry(bibtype = "Manual",
+         title   = "robsurvey: Robust Survey Statistics Estimation",
+         author  = c(person("Beat", "Hulliger"),
+                    person("Tobias", "Schoch")),
+         year    = year,
+         note    = vers,
+         url     = "https://CRAN.R-project.org/package=robsurvey")

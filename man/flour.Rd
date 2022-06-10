@@ -3,7 +3,8 @@
 \docType{data}
 \title{Measurement of Copper Content in Wholemeal Flour}
 \description{
-Measurement of copper content in wholemeal flour (measured in parts per million).
+    Measurement of copper content in wholemeal flour (measured in parts per
+    million).
 }
 \usage{data(flour)}
 \format{
@@ -15,14 +16,14 @@ Measurement of copper content in wholemeal flour (measured in parts per million)
     }
 }
 \details{
-The data are published in Maronna et al. (2006, p. 2).
+    The data are published in Maronna et al. (2019, p. 2).
 }
-
 \source{
-Maronna, R.A., D. Martin, and V.J. Yohai (2006). Robust Statistics: Theory
-and Methods, John Wiley and Sons: Chichester.
+Maronna, R. A., Martin, R. D., Yohai, V. J. and Salibián-Barrera, M.
+    (2019). \emph{Robust Statistics: Theory and Methods (with R)},
+    Hoboken (NJ): John Wiley and Sons, 2nd edition.
+    \doi{10.1002/9781119214656}
 }
-
 \examples{
 data(flour)
 }

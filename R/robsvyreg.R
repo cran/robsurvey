@@ -1,10 +1,8 @@
 # workhorse function for robust regression
-# FIXME:
-#   terms and mf object for regression
-#   see predict.lm
 robsvyreg <- function(x, y, w, k, psi, type, xwgt, var = NULL,
     verbose = TRUE, ...)
 {
+    stopifnot(is.numeric(k))
     ctrl <- svyreg_control(...)
     if (k <= 0)
         stop("Argument 'k' must be > 0\n", call. = FALSE)
@@ -40,11 +38,10 @@ robsvyreg <- function(x, y, w, k, psi, type, xwgt, var = NULL,
         scale = as.double(numeric(1)), tol = as.double(ctrl$tol),
         maxit = as.integer(ctrl$maxit), psi = as.integer(psi),
         type = as.integer(type), init = as.integer(init_flag),
-        mad_center = as.integer(ctrl$mad_center), PACKAGE = "robsurvey")
+        mad_center = as.integer(ctrl$mad_center), verbose = as.integer(verbose),
+        used_iqr = as.integer(0), PACKAGE = "robsurvey")
 
     converged <- (tmp$maxit != 0)
-    if (verbose && !converged)
-        warning("Failure of convergence\n", call. = FALSE)
 
     psi_fun <- switch(psi + 1, "Huber", "asymHuber", "Tukey")
     names(tmp$beta) <- colnames(x)
@@ -58,14 +55,14 @@ robsvyreg <- function(x, y, w, k, psi, type, xwgt, var = NULL,
         robust = list(robweights = tmp$robwgt, outliers = 1 * (tmp$robwgt < 1)),
         optim = list(converged = converged,
             niter = ifelse(tmp$maxit == 0, ctrl$maxit, tmp$maxit),
-            tol = ctrl$tol),
+            tol = ctrl$tol, used_iqr = tmp$used_iqr),
         residuals = tmp$resid,
         model = list(x = x, y = y, w = w, var = var, xwgt = xwgt, n = n, p = p),
         design = NA,
         call = match.call())
 }
 # control function for robust regression
-svyreg_control <- function(tol = 1e-5, maxit = 100, k_Inf = 1e5, init = NULL,
+svyreg_control <- function(tol = 1e-5, maxit = 100, k_Inf = 1e6, init = NULL,
     mad_center = TRUE, ...)
 {
     if (!is.numeric(tol))

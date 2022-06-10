@@ -3,15 +3,12 @@ svymean_trimmed <- function(x, design, LB = 0.05, UB = 1 - LB, na.rm = FALSE)
 {
     if (!is.language(x))
         stop("Argument 'x' must be a formula object\n", call. = FALSE)
-    dat <- .checkformula(x, design, na.rm)
+    dat <- .check_formula(x, design, na.rm)
     # in the presence of NA's
     if (dat$failure)
-        return(structure(list(characteristic = "mean",
-            estimator = list(string = paste0("Weighted trimmed estimator (",
-                LB, ", ", UB, ")"), LB = LB, UB = UB),
-            estimate = stats::setNames(NA, dat$yname), variance = NA,
-            residuals = NA, model = NA, design = design, call = match.call()),
-            class = "svystat_rob"))
+        return(.new_svystat_rob("mean", dat$yname,
+            paste0("Weighted trimmed estimator (", LB, ", ", UB, ")"),
+            match.call(), design, "trim", LB = LB, UB = UB))
     # otherwise
     design <- dat$design
     res <- weighted_mean_trimmed(dat$y, dat$w, LB, UB, TRUE, FALSE)
@@ -24,22 +21,31 @@ svymean_trimmed <- function(x, design, LB = 0.05, UB = 1 - LB, na.rm = FALSE)
     names(res$estimate) <- dat$yname
     res$call <- match.call()
     res$design <- design
-    class(res) <- "svystat_rob"
+    class(res) <- c("svystat_rob", "trim")
     res
 }
 # weighted trimmed total (depends on pkg survey)
 svytotal_trimmed <- function(x, design, LB = 0.05, UB = 1 - LB, na.rm = FALSE)
 {
-    res <- svymean_trimmed(x, design, LB, UB, na.rm)
+    if (!is.language(x))
+        stop("Argument 'x' must be a formula object\n", call. = FALSE)
+    dat <- .check_formula(x, design, na.rm)
+    # in the presence of NA's
+    if (dat$failure)
+        return(.new_svystat_rob("total", dat$yname,
+            paste0("Weighted trimmed estimator (", LB, ", ", UB, ")"),
+            match.call(), design, "trim", LB = LB, UB = UB))
+    # otherwise
+    design <- dat$design
+    res <- weighted_total_trimmed(dat$y, dat$w, LB, UB, TRUE, FALSE)
+    # influence function and variance
+    infl <- .infl_trimmed(dat$y, dat$w, LB, UB, 0) * dat$w
+    res$variance <- survey::svyrecvar(infl, design$cluster, design$strata,
+        design$fpc, postStrata = design$postStrata)
+    names(res$estimate) <- dat$yname
     res$call <- match.call()
-    if (is.na(res$estimate)) {
-        res$characteristic <- "total"
-        return(res)
-    }
-    sum_w <- sum(res$model$w)
-    res$estimate <- res$estimate * sum_w
-    res$variance <- res$variance * sum_w^2
-    res$characteristic <- "total"
+    res$design <- design
+    class(res) <- c("svystat_rob", "trim")
     res
 }
 # influence function, Huber (1981, p. 58)

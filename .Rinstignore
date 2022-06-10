@@ -5,28 +5,24 @@
 ^README\.md$
 ^inst/TODO$
 # documentation
-^inst/doc/doc\.tex
-^inst/doc/huber\.R
-^inst/doc/GM\.R
-^inst/doc/local_run\.R
-^inst/doc/master\.bib
-^inst/doc/sctmath\.tex
-^inst/doc/test_svyreg_huber\.R
-^inst/doc/psi_functions\.tex
+^inst/doc/comparison_functions\.R$
+^inst/doc/doc_regression_covariance\.md$
+^inst/doc/doc_robust_GREG\.md$
+^inst/doc/doc_psi_functions\.md$
+^inst/doc/doc_comparison\.md$
+^inst/doc/doc_comparison\.Rmd$
+^inst/doc/fluent\.css$
+^inst/doc/doc_robust_GREG\.md$
+# varia
 ^inst/varia/$
-# comparison
-^inst/comparison/comparison\.Rnw$
-^inst/comparison/Sweave\.sty$
-^inst/comparison/Makefile$
-^inst/comparison/R_functions\.R$
 # tests
 ^tests
 # src folder
 ^src/Makefile$
 ^src/_checkout_wquantile\.bat$
+^src/cflow$
 # vignettes folder
-^vignettes/Makefile$
-^vignettes/basic\.html$
-^vignettes/rht\.html$
+^vignettes/my_Makefile$
 # license (github requries it in the base directory but CRAN complains)
 ^LICENSE$
+^CONTRIBUTING.md$

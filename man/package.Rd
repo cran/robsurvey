@@ -1,21 +1,22 @@
 \docType{package}
-\name{robsurvey}
+\name{robsurvey-package}
 \alias{robsurvey-package}
+\alias{robsurvey}
 \title{Package Overview}
 \description{
-A key \emph{design pattern} of the package is that the majority
-of the estimating methods is available in two "flavors":
-\itemize{
-    \item bare-bone methods
-    \item survey methods
-}
-Bare-bone methods are stripped-down versions of the survey methods in
-terms of functionality and informativeness. These functions may serve
-users and other package developers as building blocks. In particular,
-bare-bone functions \emph{cannot compute} variances.
+    A key \emph{design pattern} of the package is that the majority
+    of the estimating methods is available in two "flavors":
+    \itemize{
+        \item bare-bone methods
+        \item survey methods
+    }
+    Bare-bone methods are stripped-down versions of the survey methods in
+    terms of functionality and informativeness. These functions may serve
+    users and package developers as building blocks. In particular,
+    bare-bone functions \emph{cannot compute} variances.
 
-The survey methods are much more capable and depend, for variance estimation,
-on the \pkg{\link{survey}} package.
+    The survey methods are much more capable and depend, for variance
+    estimation, on the \pkg{\link{survey}} package.
 }
 \section{Basic Robust Estimators}{
     \subsection{Trimming}{
@@ -60,7 +61,7 @@ on the \pkg{\link{survey}} package.
                     \code{\link{weighted_total_huber}}
                 \item \code{\link{weighted_mean_tukey}} and
                     \code{\link{weighted_total_tukey}}
-                \item \code{\link{huber2}} (weighted Huber proposal 2
+                \item \code{\link{huber2}} (weighted Huber Proposal 2
                     estimator)
             }
             \item Survey methods:
@@ -74,15 +75,21 @@ on the \pkg{\link{survey}} package.
         }
     }
 }
-\section{Survey Regression (weighted)}{
+\section{Survey Regression (weighted least squares)}{
     \code{\link{svyreg}}
 }
 \section{Robust Survey Regression (weighted)}{
     \itemize{
-        \item Regression M-estimators: \code{\link{svyreg_huber}} and
-            \code{\link{svyreg_tukey}}
+        \item Regression M-estimators: \code{\link{svyreg_huberM}} and
+            \code{\link{svyreg_tukeyM}}
         \item Regression GM-estimators (Mallows and Schweppe):
             \code{\link{svyreg_huberGM}} and \code{\link{svyreg_tukeyGM}}
+    }
+}
+\section{Robust Generalized Regression Estimation (GREG)}{
+    \itemize{
+        \item Mean: \code{\link{svymean_reg}}
+        \item Total: \code{\link{svytotal_reg}}
     }
 }
 \section{Utility functions}{

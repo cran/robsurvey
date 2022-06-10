@@ -1,3 +1,34 @@
+# Slots of objects of class 'svyreg_rob'
+#  + characteristic: "regression"
+#  + estimator [list]
+#     + string: [char]
+#     + type: [int]
+#     + psi: [int]
+#     + psi_fun: [char]
+#     + k: [numeric]
+#  + estimate: [numeric] vector of estimated regression coefficients
+#  + scale: [numeric] scale estimate
+#  + robust [list]
+#     + robweights: [numeric] robustness weights
+#     + outliers: [numeric] indicator variable
+#  + optim [list]
+#     + converged: [logical]
+#     + niter: [int] number of IRWLS iterations
+#     + tol: [numeric] numerical tolerance criterion (IRLWS)
+#     + used_iqr: [int] 1 = scale estimated by IQR not MAD
+#  + residuals: [numeric]
+#  + model [list]
+#     + x: [matrix] design matrix
+#     + y: [numeric] response variable
+#     + w: [numeric] sampling weights
+#     + var: [numeric] heteroscedasticity variances
+#     + xwgt: [numeric] weights in the model's design space (GM-estimator)
+#     + n [int] number of observations
+#     + p [int] number of independent variables
+#  + design: [survey.design object without 'variables']
+#  + call: [call object]
+#  + terms: [terms object]
+
 # print method for robust regression object
 print.svyreg_rob <- function(x, digits = max(3L, getOption("digits") - 3L), ...)
 {
@@ -26,7 +57,8 @@ print.svyreg_rob <- function(x, digits = max(3L, getOption("digits") - 3L), ...)
             print.default(format(x$estimate, digits = digits), print.gap = 2L,
                 quote = FALSE)
         }
-        cat("\nScale estimate:", format(signif(x$scale, digits)), "\n")
+        cat("\nScale estimate:", format(signif(x$scale, digits)),
+            ifelse(x$optim$used_iqr, "(weighted IQR)", "(weighted MAD)"), "\n")
     } else {
         cat("\nIRWLS not converged in", x$optim$niter, "iterations (with tol =",
             x$optim$tol, ")\n")
@@ -127,10 +159,15 @@ vcov.svyreg_rob <- function(object, mode = c("design", "model", "compound"),
     if (!is.null(v))
         r <- r / sqrt(v)
 
+    # robustness weights
+    ui <- if (is.null(object$robust))
+        rep(1, object$model$n)
+    else
+        object$robust$robweights
+
     tmp <- .C("cov_reg_model", resid = as.double(r),
         x = as.double(object$model$x), xwgt = as.double(object$model$xwgt),
-        robwgt = as.double(object$robust$robweights),
-        w = as.double(object$model$w), k = as.double(k),
+        robwgt = as.double(ui), w = as.double(object$model$w), k = as.double(k),
         scale = as.double(object$scale), scale = as.double(numeric(1)),
         n = as.integer(object$model$n), p = as.integer(object$model$p),
         psi = as.integer(object$estimator$psi),
@@ -175,9 +212,15 @@ vcov.svyreg_rob <- function(object, mode = c("design", "model", "compound"),
     # scale the weights (prevent overflow)
     w <- object$model$w / sum(object$model$w)
 
+    # robustness weights
+    ui <- if (is.null(object$robust))
+        rep(1, n)
+    else
+        object$robust$robweights
+
     # Q matrix
-    Q <- survey::svyrecvar(w * xwgt * x * object$robust$robweights * r,
-        object$design$cluster, object$design$strata, object$design$fpc)
+    Q <- survey::svyrecvar(w * xwgt * x * ui * r, object$design$cluster,
+        object$design$strata, object$design$fpc)
 
     # covariance matrix (takes Q matrix as one of its argument)
     tmp <- .C("cov_reg_design", x = as.double(x), w = as.double(w),
@@ -239,7 +282,183 @@ robweights.svyreg_rob <- function(object)
     }
 }
 # plot method for robust regression object
-plot.svyreg_rob <- function (x, which = 1:5, ...)
+plot.svyreg_rob <- function(x, which = 1L:4L,
+    hex = FALSE, caption = c("Standardized residuals vs. Fitted Values",
+    "Normal Q-Q", "Response vs. Fitted values",
+    "Sqrt of abs(Residuals) vs. Fitted Values"),
+	panel = if (add.smooth) function(x, y, ...) panel.smooth(x, y,
+    iter = iter.smooth, ...) else points, sub.caption = NULL, main = "",
+	ask = prod(par("mfcol")) < length(which) && dev.interactive(), ...,
+	id.n = 3, labels.id = names(residuals(x)), cex.id = 0.75, qqline = TRUE,
+	add.smooth = getOption("add.smooth"), iter.smooth = 3,
+	label.pos = c(4, 2), cex.caption = 1, cex.oma.main = 1.25)
 {
-    .NotYetImplemented()
+    if (!is.numeric(which) || any(which < 1) || any(which > 4))
+        stop("'which' must be in 1:4")
+
+    show <- rep(FALSE, 4)
+    show[which] <- TRUE
+
+    r <- residuals(x)
+    n <- length(r)
+    yh <- fitted(x)
+    w <- x$model$w
+    y <- x$model$y
+
+    # standardized residuals
+    rs <- r / x$scale
+
+    if (is.null(id.n)) {
+        id.n <- 0
+    } else {
+        id.n <- as.integer(id.n)
+        if (id.n < 0L || id.n > n)
+            stop(gettextf("'id.n' must be in {1,..,%d}", n), domain = NA)
+    }
+    if (id.n > 0L) {
+        if (is.null(labels.id))
+            labels.id <- paste(1L:n)
+        iid <- 1L:id.n
+        show.r <- sort.list(abs(r), decreasing = TRUE)[iid]
+        if (any(show[2L:3L]))
+            show.rs <- sort.list(abs(rs), decreasing = TRUE)[iid]
+        text.id <- function(x, y, ind, adj.x = TRUE)
+		{
+            labpos <- if (adj.x)
+                label.pos[1 + as.numeric(x > mean(range(x)))]
+            else
+				3
+            text(x, y, labels.id[ind], cex = cex.id, xpd = TRUE,
+                pos = labpos, offset = 0.25)
+        }
+    }
+    getCaption <- function(k)
+	{
+		if (length(caption) < k)
+        	NA_character_
+	    else
+			as.graphicsAnnot(caption[[k]])
+	}
+    if (is.null(sub.caption)) {
+        cal <- x$call
+        if (!is.na(m.f <- match("formula", names(cal)))) {
+            cal <- cal[c(1, m.f)]
+            names(cal)[2L] <- ""
+        }
+        cc <- deparse(cal, 80)
+        nc <- nchar(cc[1L], "c")
+        abbr <- length(cc) > 1 || nc > 75
+        sub.caption <- if (abbr)
+            paste(substr(cc[1L], 1L, min(75L, nc)), "...")
+        else
+			cc[1L]
+    }
+    one.fig <- prod(par("mfcol")) == 1
+    if (ask) {
+        oask <- devAskNewPage(TRUE)
+        on.exit(devAskNewPage(oask))
+    }
+	# Standardized residuals vs. Fitted values
+    if (show[1L]) {
+        ylim <- range(rs, na.rm = TRUE)
+        if (id.n > 0)
+            ylim <- extendrange(r = ylim, f = 0.08)
+        dev.hold()
+        if (hex) {
+            requireNamespace("hexbin")
+            hb <- hexbin::hexbin(yh, rs, ybnds = ylim)
+            hvp <- hexbin::plot(hb, xlab = "Fitted values",
+                ylab = "Standardized residuals", main = main)
+            hexbin::hexVP.abline(hvp$plot, h = 0, lty = 3, col = "gray")
+            hexbin::hexVP.loess(hb, hvp = hvp$plot, span = 2 / 3, ...)
+        } else {
+            plot(yh, rs, xlab = "Fitted values",
+                ylab = "Standardized residuals", main = main, ylim = ylim,
+                type = "n", ...)
+            panel(yh, rs, ...)
+            if (one.fig)
+                title(sub = sub.caption, ...)
+            mtext(getCaption(1), 3, 0.25, cex = cex.caption)
+            if (id.n > 0) {
+                y.id <- rs[show.r]
+                y.id[y.id < 0] <- y.id[y.id < 0] - strheight(" ") / 3
+                text.id(yh[show.r], y.id, show.r)
+            }
+            abline(h = 0, lty = 3, col = "gray")
+        }
+        dev.flush()
+    }
+	# Normal Q-Q
+    if (show[2L]) {
+        ylim <- range(rs, na.rm = TRUE)
+        ylim[2L] <- ylim[2L] + diff(ylim) * 0.075
+        dev.hold()
+        qq <- qqnorm(rs, main = main, ylab = "Standardized residuals",
+            ylim = ylim, ...)
+        if (qqline)
+            qqline(rs, lty = 3, col = "gray50")
+        if (one.fig)
+            title(sub = sub.caption, ...)
+        mtext(getCaption(2), 3, 0.25, cex = cex.caption)
+        if (id.n > 0)
+            text.id(qq$x[show.rs], qq$y[show.rs], show.rs)
+        dev.flush()
+    }
+    # Response vs. Fitted values
+    if (show[3L]) {
+        ylim <- range(y, na.rm = TRUE)
+        if (id.n > 0)
+            ylim <- extendrange(r = ylim, f = 0.08)
+        dev.hold()
+        if (hex) {
+            requireNamespace("hexbin")
+            hb <- hexbin::hexbin(yh, y, ybnds = ylim)
+            hvp <- hexbin::plot(hb, xlab = "Fitted values", ylab = "Response",
+                main = main)
+            hexbin::hexVP.abline(hvp$plot, h = 0, lty = 3, col = "gray")
+            hexbin::hexVP.loess(hb, hvp = hvp$plot, span = 2 / 3, ...)
+        } else {
+            plot(yh, y, xlab = "Fitted values", ylab = "Response",
+                main = main, ylim = ylim, type = "n", ...)
+            panel(yh, y, ...)
+            if (one.fig)
+                title(sub = sub.caption, ...)
+            mtext(getCaption(3), 3, 0.25, cex = cex.caption)
+            if (id.n > 0) {
+                y.id <- y[show.r]
+                y.id[y.id < 0] <- y.id[y.id < 0] - strheight(" ") / 3
+                text.id(yh[show.r], y.id, show.r)
+            }
+            abline(h = 0, lty = 3, col = "gray")
+        }
+        dev.flush()
+    }
+    # Sqrt of abs(Residuals) vs. Fitted values
+    if (show[4L]) {
+        sqrtabsr <- sqrt(abs(r))
+        ylim <- c(0, max(sqrtabsr, na.rm = TRUE))
+        yhn0 <- yh
+        dev.hold()
+        if (hex) {
+            requireNamespace("hexbin")
+            hb <- hexbin::hexbin(yhn0, sqrtabsr, ybnds = ylim)
+            hvp <- plot(hb, xlab = "Fitted values",
+                ylab = "Sqrt of abs(Residuals)", main = main)
+            hexbin::hexVP.loess(hb, hvp = hvp$plot, span = 2 / 3, ...)
+        } else {
+            plot(yhn0, sqrtabsr, xlab = "Fitted values",
+                ylab = "Sqrt of abs(Residuals)", main = main, ylim = ylim,
+                type = "n", ...)
+            panel(yhn0, sqrtabsr, ...)
+            if (one.fig)
+                title(sub = sub.caption, ...)
+            mtext(getCaption(4), 3, 0.25, cex = cex.caption)
+            if (id.n > 0)
+                text.id(yhn0[show.rs], sqrtabsr[show.rs], show.rs)
+        }
+        dev.flush()
+    }
+    if (!one.fig && par("oma")[3L] >= 1)
+        mtext(sub.caption, outer = TRUE, cex = cex.oma.main)
+    invisible()
 }

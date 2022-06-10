@@ -1,30 +1,19 @@
-# MILESTONE R 0.2
+# TODO - Road Map
 
-# MILESTONE R 0.3
-## ADD FEATURE
-* svymean_reg (+ _total_)
-    - description
-    - details
-    - examples
-* svyreg: predict method
-* plot.svyreg_rob: diagnostic plots
-* model-assisted estimation
-    - variance estimator
-    - vignette
-* tests
-* svymean_reg (+ _total_)
-    - functionality
-    - types:
-        - projective
-        - ADU
-        - psi
-        - Lee
-        - Duchesne
-    - summary + variance
+---
 
-## DOCUMENTATION
-* weighted_line + weighted_median_lines
+## MILESTONE ver. 0.4
 
-# UNSCHEDULED
+### DOCUMENTATION
+
+* Improve documentation of `weighted_line()`  and  `weighted_median_lines()`
+* Documentation, examples, and vignette of `svymean_reg()` and `svytotal_reg()`
+
+### NEW FEATURE
+
+* `svyreg()`: predict method
 * robust calibration
 
+---
+
+## UNSCHEDULED

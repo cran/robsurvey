@@ -4,6 +4,8 @@ weighted_mean_dalen <- function(x, w, censoring, type = "Z2", info = FALSE,
 {
     res <- robsurvey::weighted_total_dalen(x, w, censoring, type, na.rm,
         verbose, info = TRUE)
+    if (is.na(res$estimate))
+        return(NA)
     res$characteristic <- "mean"
     res$estimate <- res$estimate / sum(res$model$w)
     res$call <- match.call()
@@ -17,7 +19,7 @@ weighted_total_dalen <- function(x, w, censoring, type = "Z2", info = FALSE,
     na.rm = FALSE, verbose = TRUE)
 {
     stopifnot(censoring > 0)
-    dat <- .check(x, w, na.rm)
+    dat <- .check_data_weights(x, w, na.rm)
     if (is.null(dat))
         return(NA)
     xw <- dat$x * dat$w
