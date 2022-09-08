@@ -1,5 +1,31 @@
 **If you are viewing this file on CRAN, please check [latest news on GitHub](https://github.com/tobiasschoch/robsurvey/blob/master/NEWS.md) where the formatting is also better.**
 
+# robsurvey VERSION 0.4 (==ADD==)
+
+## NEW FEATURES
+
+* Robust estimators of the ratio of two variables (`svyratio_huber()` and `svyratio_tukey()`); these functions are robust alternatives to `survey::svyratio()`.
+* Robust ratio estimators of the population mean and total, see `svymean_ratio()` and `svytotal_ratio()`.
+* Example data `MU284pps`: A pps sample without replacement of size 50 from the MU284 population in Särndal et al. (1992).
+
+## CHANGES
+
+* Functions `svymean_reg()` and `svytotal_reg()` are not flagged as "experimental" anymore. Several changes took place (in fact, the functions have undergone a complete code refactoring):
+  * Argument `auxiliary` has been replaced by the two arguments `N` (population size) and `totals` (i.e., population totals of non-constant explanatory variables). **Important:** `svymean_reg()` is now called with `totals` not the population means.
+  * The arguments `na.rm` and `verbose` have been dropped (not needed).
+  * The variance estimators in `svymean_reg()` and `svytotal_reg()` are now implemented as *g*-weighted residual variance estimators.
+
+
+* Added documentation for variable `strat` in the `workplace` data and updated description of variable `payroll`.
+
+* Added 45-degree line in the diagnostic `plot` method for "3 Response vs. Fitted values" (`which = 3`) of class `svyreg_rob`.
+* Method `SE()` for class `svyreg_rob` is now exported to the namespace.
+
+## BUG FIX
+
+* Slot`estimator$string` in the return value of function `mer()` indicates the name of the underlying estimator correctly.
+* Fixed annotation of observations in diagnostic plot "Sqrt of abs(Residuals) vs. Fitted values" (`which = 4` in `plot`) for class `svyreg_rob`.
+
 # robsurvey VERSION 0.3 (2022-06-04)
 
 ## NEW FEATURES
@@ -7,12 +33,12 @@
 * Diagnostic plots for fitted regression model, i.e., objects of class `svyreg_rob`
 * Robust regression: If the estimated regression scale (by default weighted MAD) is zero (or nearly so), the weighted IQR is tried instead. If the weighted IQR ist also zero, the function returns with an error.
 * Function `mer()` for minimum estimated risk estimation of location gained two new arguments:
-  * `method` : the method used in the search for a minimum, e.g., `"Brent"`, `"BFGS"`, see `stats::optim()` for more details
+  * `method`: the method used in the search for a minimum, e.g., `"Brent"`, `"BFGS"`, see `stats::optim()` for more details
   * `init` determines the left side of the search interval and the initial value in the minimization approach
 
 * Function `mse()` computes/ extracts the estimated mean square error/ estimated risk in presence of representative outliers; see also `mer()`
 
-* Robust generalized regression estimation (GREG) of the mean and total; see `svymean_reg()` and `svytotal_reg()`. The current implementation of the functions is **EXPERIMENTAL** and a warning is issued when calling the functions (unless `verbose = FALSE`). Experimental features may:
+* Robust generalized regression estimation (GREG) of the mean and total; see `svymean_reg()` and `svytotal_reg()`. The current implementation of the functions is **EXPERIMENTAL** and a warning is issued when calling the functions (unless `verbose = FALSE`). Experimental features may:
   * have undergone less extensive testing than is normal for standard features
   * interact with unstable (external) dependencies
   * be subject to change

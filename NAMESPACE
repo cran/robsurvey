@@ -28,6 +28,7 @@ S3method(robweights,svystat_rob)
 S3method(robweights,svyreg_rob)
 
 export(SE.svystat_rob)
+export(SE.svyreg_rob)
 
 S3method(plot,svyreg_rob)
 
@@ -44,8 +45,12 @@ export(svymean_trimmed)
 export(svymean_tukey)
 export(svymean_winsorized)
 export(svymean_dalen)
+
 export(svymean_reg)
 export(svytotal_reg)
+
+export(svymean_ratio)
+export(svytotal_ratio)
 
 export(svytotal_huber)
 export(svytotal_k_winsorized)
@@ -65,6 +70,9 @@ export(svyreg_huberGM)
 export(svyreg_tukey)
 export(svyreg_tukeyM)
 export(svyreg_tukeyGM)
+
+export(svyratio_huber)
+export(svyratio_tukey)
 
 export(weighted_IQR)
 export(weighted_line)
@@ -104,7 +112,7 @@ export(simpsonWgt)
 importFrom(graphics,plot)
 
 useDynLib(robsurvey)
-useDynLib(robsurvey,huberm)
+useDynLib(robsurvey,whuber2)
 useDynLib(robsurvey,rwlslm)
 useDynLib(robsurvey,wlslm)
 useDynLib(robsurvey,wquantile)

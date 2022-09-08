@@ -97,8 +97,11 @@
 
     # heteroscedasticity (only one variable); without NA handling; we will
     # deal with this together with x, y, etc.
-    if (!is.null(var))
+    if (!is.null(var)) {
         var <- .check_formula(var, design, FALSE, FALSE)$y
+        if (any(var <  .Machine$double.eps))
+            stop("Some variances are zero or close to zero\n", call. = FALSE)
+    }
 
     # extract the variables
     mf <- stats::model.frame(formula, design$variables,
@@ -220,7 +223,7 @@
      88   Y8. .8P 88  dP  \\__ \\ |_| | |   \\ V /  __/ |_| |
      88    'Y8P'  88e8P'  |___/\\__,_|_|    \\_/ \\___|\\__, |
 						     __/ |
-					version 0.3 |___/\n\ntype: package?robsurvey to learn more
+					version 0.4 |___/\n\ntype: package?robsurvey to learn more
 use:  library(robsurvey, quietly = TRUE) to suppress the
       start-up message\n")
    }
