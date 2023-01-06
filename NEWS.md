@@ -1,5 +1,24 @@
 **If you are viewing this file on CRAN, please check [latest news on GitHub](https://github.com/tobiasschoch/robsurvey/blob/master/NEWS.md) where the formatting is also better.**
 
+# robsurvey VERSION 0.5-2 (2022-12-04)
+
+## BUG FIX
+
+Fixed a bug in the C function `wquant0`. For the special case of samples of size 2, the weighted quantile (other than the median) was wrong if the data were sorted in descending order. (Thanks to Ryota Suzuki, who detected the bug, [Issue #1](https://github.com/tobiasschoch/robsurvey/issues/1)).
+
+# robsurvey VERSION 0.5-1 (2022-11-17)
+
+## CHANGE
+
+The `summary()` method for objects of class `formula` has been replaced by `svysummary()` because it did not handle non-standard cases correctly (Thanks to the editorial office of the Journal of Statistical Software for pointing this out). 
+
+## MISC
+
+* Fixed defunct links in vignettes and added `requireNamespace()` as a guard for suggested packages in the vignettes.
+
+* In the help files of functions that depend on the `survey` package or that extend its functionality, we added the following note: "Package `survey` must be loaded in order to use this function." to the Details section.
+
+
 # robsurvey VERSION 0.5 (2022-10-07)
 
 ## CHANGES

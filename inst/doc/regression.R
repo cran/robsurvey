@@ -67,12 +67,21 @@ xmat <- model.matrix(f, dn_exclude$variables)[, -1]
 pairs(xmat)
 
 ## -----------------------------------------------------------------------------
-library(wbacon)
-mv <- wBACON(xmat, weights = weights(dn_exclude))
-mv
-
-## -----------------------------------------------------------------------------
-dis <- distance(mv)
+if (requireNamespace("wbacon", quietly = TRUE)) {
+    # package wbacon is available
+    mv <- wbacon::wBACON(xmat, weights = weights(dn_exclude))
+    # distances
+    dis <- wbacon::distance(mv)
+} else {
+    # package wbacon is not available
+    center <- c(6.285968, 10.195002, 12.047715)
+    scatter <- matrix(0, 3, 3)
+    scatter[lower.tri(scatter, TRUE)] <- c(0.678646, 0.441020, 0.415634,
+        2.191174, -0.302097, 1.040932)
+    scatter <- scatter + t(scatter) - diag(3) * scatter
+    # distances
+    dis <- sqrt(mahalanobis(xmat, center, scatter))
+}
 
 ## ---- echo=FALSE, out.width="50%", fig.align = "center"-----------------------
 boxplot(dis, horizontal = TRUE, xlab = "dis")
@@ -105,11 +114,14 @@ m <- svyreg_huberM(log(farmpop) ~ log(numfarm), dn0, k = 1.3, na.rm = TRUE)
 ## -----------------------------------------------------------------------------
 summary(m, mode = "model")
 
-## -----------------------------------------------------------------------------
-library(MASS)
-summary(rlm(log(farmpop) ~ log(numfarm),
-    data = counties[counties$farmpop > 0, ],
-    k = 1.3, na.action = na.omit))
+## ---- echo=FALSE--------------------------------------------------------------
+if (requireNamespace("MASS", quietly = TRUE)) {
+    summary(MASS::rlm(log(farmpop) ~ log(numfarm),
+        data = counties[counties$farmpop > 0, ],
+        k = 1.3, na.action = na.omit))
+} else {
+    cat("Package MASS is not available\n")
+}
 
 ## -----------------------------------------------------------------------------
 data(MU284strat)

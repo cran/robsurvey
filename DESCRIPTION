@@ -1,7 +1,7 @@
 Package: robsurvey
 Type: Package
 Title: Robust Survey Statistics Estimation
-Version: 0.5
+Version: 0.5-2
 Authors@R: c(person(
         given = "Beat",
         family = "Hulliger",
@@ -32,12 +32,12 @@ NeedsCompilation: yes
 LazyData: true
 Depends: R (>= 3.5.0)
 Imports: grDevices, stats, survey (>= 3.35-1), KernSmooth
-Suggests: hexbin, MASS, knitr, rmarkdown, wbacon
+Suggests: hexbin, knitr, MASS, rmarkdown, wbacon
 VignetteBuilder: knitr, rmarkdown
-Packaged: 2022-10-07 15:48:24 UTC; tobias.schoch
+Packaged: 2022-12-31 11:24:44 UTC; tobias.schoch
 Author: Beat Hulliger [aut],
   Tobias Schoch [aut, cre] (<https://orcid.org/0000-0002-1640-3395>),
   Martin Sterchi [ctr, com]
 Maintainer: Tobias Schoch <tobias.schoch@fhnw.ch>
 Repository: CRAN
-Date/Publication: 2022-10-07 18:00:02 UTC
+Date/Publication: 2023-01-06 13:30:02 UTC
