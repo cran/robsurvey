@@ -55,13 +55,18 @@ Patak, Z., Hidiroglou, M. and Lavallée, P. (1998). The methodology of the
     Research Methods Section, American Statistical Association}, 83--91.
 }
 \examples{
-data(workplace)
+head(workplace)
 
-\dontrun{
-# generate a survey design (library 'survey' must be loaded)
-library(survey)
-dn <- svydesign(ids = ~ID, strata = ~strat, fpc = ~fpc, weights = ~weight,
-    data = workplace)
-}
+library("survey")
+# Survey design for stratified simple random sampling without replacement
+dn <- if (packageVersion("survey") >= "4.2") {
+        # survey design with pre-calibrated weights
+        svydesign(ids = ~ID, strata = ~strat, fpc = ~fpc, weights = ~weight,
+                  data = workplace, calibrate.formula = ~-1 + strat)
+    } else {
+        # legacy mode
+        svydesign(ids = ~ID, strata = ~strat, fpc = ~fpc, weights = ~weight,
+                  data = workplace)
+    }
 }
 \keyword{datasets}

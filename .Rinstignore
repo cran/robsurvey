@@ -17,11 +17,8 @@
 ^inst/doc/useR_2022_conference
 # varia
 ^inst/varia
-# tests
-^tests
 # src folder
-^src/Makefile$
-^src/_checkout_wquantile\.bat$
+^src/my_makefile$
 ^src/cflow$
 # vignettes folder
 ^vignettes/my_Makefile$

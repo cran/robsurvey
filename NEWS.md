@@ -1,5 +1,27 @@
 **If you are viewing this file on CRAN, please check [latest news on GitHub](https://github.com/tobiasschoch/robsurvey/blob/master/NEWS.md) where the formatting is also better.**
 
+# robsurvey VERSION 0.6 (2024-01-14)
+
+This release of the package fixes a number of issues that were brought to our attention by an anonymous reviewer. It also fixes some other problems.
+
+## BUG FIX
+
+Function `huber2()` erroneously returned `NA` if the initial scale estimate was less than `DBL_EPSILON` (i.e., zero in floating-point arithmetics) although not zero in real arithmetics. After removing the unnecessary  `scale < DBL_EPSILON` check, the function behaves as expected.
+
+## CHANGES
+
+* `R-core` has been added to the list of intellectual property owners with the roles `c("cph", ctb")` for `zeroin2.c` (see `DESCRIPTION` file).
+* Automated tests have been part of the [GitHub](https://github.com/tobiasschoch/robsurvey) repo since the first commit. However, the tests have not been shipped with the source package. Now, the tests are included in the source package.
+* Function `robsvyreg()` is not exported to the namespace anymore because it is regarded as an internal function (not to be called by users).
+* Since **version 4.2** of the **survey** package (released in May 2023), the `survey` package allows the definition of pre-calibrated weights (see argument `calibrate.formula` of the function `survey::svydesign()`; see also vignette [Pre-calibrated weights](https://CRAN.R-project.org/package=survey/vignettes/precalibrated.pdf) of the `survey` package). From now on, we will use this functionality by default in the examples, vignettes and documentation. Our code automatically reverts/falls back to calling `svydesign()` without pre-calibrated weights (**legacy mode**) on R installations with an **earlier** version of the `survey` package. As a consequence, some of the variance and standard error estimates in legacy mode may differ from those with pre-calibrated weights.
+
+## MISC
+
+* Many of the help files have been updated and expanded.
+* Since version 0.3, the functions `svyreg_huber()` and `svyreg_tukey()` are deprecated but have been kept for compatibility reasons. The deprecated functions are now equipped with a call to `.Deprecated()` and are documented separately in `help("robsurvey-deprecated")`.
+* Some of the R and C code has been cleaned up; the `NAMESPACE` file has been consolidated; symbols of shared objects are now registered using `src/init.c` (this file has previously been called `robsurvey_init.c`) and loaded by `useDynLib()` as R objects (not character strings), whose names are pre-fixed by `"C_"` for reasons of transparency.
+* The stratum variable `strat` in the dataset `workplace` is now a `factor`; the same applies to the variables `REG`, `CL` and `Stratum` in the datasets `MU284strat` and `MU284pps`.
+
 # robsurvey VERSION 0.5-2 (2022-12-04)
 
 ## BUG FIX
@@ -15,21 +37,15 @@ The `summary()` method for objects of class `formula` has been replaced by `svys
 ## MISC
 
 * Fixed defunct links in vignettes and added `requireNamespace()` as a guard for suggested packages in the vignettes.
-
 * In the help files of functions that depend on the `survey` package or that extend its functionality, we added the following note: "Package `survey` must be loaded in order to use this function." to the Details section.
-
 
 # robsurvey VERSION 0.5 (2022-10-07)
 
 ## CHANGES
 
-* Files in `/doc` folder are now in `*.pdf` format which takes less space compared with the `*.html` format. Thus, the warning `checking installed package size ... NOTE
-   installed size is 5.4Mb
-   sub-directories of 1Mb or more:
-    doc 4.9Mb` disappeared
-
+* Files in `/doc` folder are now in `*.pdf` format which takes less space compared with the `*.html` format. Thus, the warning `checking installed package size... NOTE installed size is 5.4Mb sub-directories of 1Mb or more: doc 4.9Mb` disappeared
+  
 * The print method for objects of class `svystat_rob` now correctly prints: [Estimator] `of the population` [mean/total].
-
 * The default value of argument `type` in the functions `weighted_mean_huber()`, `weighted_mean_tukey()`, `svymean_huber()` and `svymean_tukey()` is now `"rwm"`. Type `"rhj"` is still available (and will be supported in the future) but is silently converted to `"rwm"`.
 
 # robsurvey VERSION 0.4 (2022-09-08)
@@ -47,9 +63,7 @@ The `summary()` method for objects of class `formula` has been replaced by `svys
   * The arguments `na.rm` and `verbose` have been dropped (not needed).
   * The variance estimators in `svymean_reg()` and `svytotal_reg()` are now implemented as *g*-weighted residual variance estimators.
 
-
 * Added documentation for variable `strat` in the `workplace` data and updated description of variable `payroll`.
-
 * Added 45-degree line in the diagnostic `plot` method for "3 Response vs. Fitted values" (`which = 3`) of class `svyreg_rob`.
 * Method `SE()` for class `svyreg_rob` is now exported to the namespace.
 
@@ -67,16 +81,12 @@ The `summary()` method for objects of class `formula` has been replaced by `svys
 * Function `mer()` for minimum estimated risk estimation of location gained two new arguments:
   * `method`: the method used in the search for a minimum, e.g., `"Brent"`, `"BFGS"`, see `stats::optim()` for more details
   * `init` determines the left side of the search interval and the initial value in the minimization approach
-
 * Function `mse()` computes/ extracts the estimated mean square error/ estimated risk in presence of representative outliers; see also `mer()`
-
 * Robust generalized regression estimation (GREG) of the mean and total; see `svymean_reg()` and `svytotal_reg()`. The current implementation of the functions is **EXPERIMENTAL** and a warning is issued when calling the functions (unless `verbose = FALSE`). Experimental features may:
   * have undergone less extensive testing than is normal for standard features
   * interact with unstable (external) dependencies
   * be subject to change
-  * not be directly supported by the developers in the event
-    issues arise
-  
+  * not be directly supported by the developers in the event issues arise
 
 
 ## CHANGES
@@ -87,7 +97,7 @@ The `summary()` method for objects of class `formula` has been replaced by `svys
 
 ## BUG FIX
 
-For designs with unequal probability sampling, the variance estimates of the robust estimators of mean and total are now identical with the estimates of `survey::svymean()` and `survey::svytotal()` if the tuning constant is `k = Inf` or `LB = 0` and `UB = 1`
+For designs with unequal probability sampling, the variance estimates of the robust estimators of mean and total are now identical with the estimates of `survey::svymean()` and `survey::svytotal()` if the tuning constant is `k = Inf` or `LB = 0` and `UB = 1`.
 
 ## MISC
 

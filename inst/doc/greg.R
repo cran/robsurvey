@@ -2,25 +2,49 @@
 knitr::opts_chunk$set(
     collapse = TRUE,
     comment = "",
-    prompt = TRUE
+    prompt = TRUE,
+    dpi = 36,
+    fig.align = "center"
 )
 
-## ---- eval=FALSE--------------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  library("robsurvey", quietly = TRUE)
 #  library("survey")
 #  data("MU284pps")
 
-## ---- echo = FALSE------------------------------------------------------------
+## ----echo = FALSE-------------------------------------------------------------
 library(robsurvey, quietly = TRUE)
 suppressPackageStartupMessages(library(survey))
 
-## -----------------------------------------------------------------------------
-dn <- svydesign(ids = ~LABEL, fpc = ~pi, data = MU284pps, pps = "brewer")
+## ----echo = FALSE, results = "asis"-------------------------------------------
+survey_version <- packageVersion("survey")
+if (survey_version < "4.2") {
+cat(paste0('<div class="my-sidebar-orange">\n
+<p style="color: #ce5b00;">
+**IMPORTANT: PRE-CALIBRATED WEIGHTS ARE NOT SUPPORTED**
+</p>
+This vignette has been built with version **', survey_version,
+'** of the **survey** package. Therefore, `svydesign()` is called without
+the `calibrate.formula` argument. As a consequence, some of the variance and
+standard error estimates may differ from those with pre-calibrated weights,
+i.e., the default specification.<p>
+</p>
+</div>'))
+}
 
-## -----------------------------------------------------------------------------
-dn
+## ----eval = FALSE-------------------------------------------------------------
+#  dn <- svydesign(ids = ~LABEL, fpc = ~pi, data = MU284pps, pps = "brewer",
+#                  calibrate = ~1)
 
-## ---- fig.show="hold", out.width="80%"----------------------------------------
+## ----echo = FALSE-------------------------------------------------------------
+dn <- if (packageVersion("survey") >= "4.2") {
+        svydesign(ids = ~LABEL, fpc = ~pi, data = MU284pps, pps = "brewer",
+                  calibrate = ~1)
+    } else {
+        svydesign(ids = ~LABEL, fpc = ~pi, data = MU284pps, pps = "brewer")
+    }
+
+## ----out.width = "80%"--------------------------------------------------------
 svyplot(RMT85 ~ P85, dn, xlab = "P85", ylab = "RMT85", inches = 0.1)
 
 ## -----------------------------------------------------------------------------
@@ -49,11 +73,12 @@ wls
 ## -----------------------------------------------------------------------------
 summary(wls)
 
-## ---- fig.show="hold", out.width="50%"----------------------------------------
+## ----out.width = "50%", fig.align = "default"---------------------------------
 plot(wls)
 
 ## -----------------------------------------------------------------------------
-tot <- svytotal_reg(wls, totals = c(P85 = 8339, SS82 = 6301), N = 284, type = "ADU")
+tot <- svytotal_reg(wls, totals = c(P85 = 8339, SS82 = 6301), N = 284,
+                    type = "ADU")
 tot
 
 ## -----------------------------------------------------------------------------
@@ -63,11 +88,12 @@ mse(tot) / 1e6
 rob <- svyreg_tukeyM(RMT85 ~ P85 + SS82, dn, k = 15)
 rob
 
-## ---- fig.show="hold", out.width="50%"----------------------------------------
+## ----out.width = "50%", fig.align = "default"---------------------------------
 plot(rob)
 
 ## -----------------------------------------------------------------------------
-tot <- svytotal_reg(rob, totals = c(P85 = 8339, SS82 = 6301), N = 284, type = "huber", k = 50)
+tot <- svytotal_reg(rob, totals = c(P85 = 8339, SS82 = 6301), N = 284,
+                    type = "huber", k = 50)
 tot
 
 ## -----------------------------------------------------------------------------

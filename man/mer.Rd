@@ -25,7 +25,8 @@ mer(object, verbose = TRUE, max_k = 10, init = 1, method = "Brent",
     \code{\link{mse}}, of the estimator under consideration.
 }
 \details{
-    Package \pkg{survey} must be loaded in order to use the functions.
+    Package \pkg{survey} must be attached to the search path in order to use
+    the functions (see \code{\link{library}} or \code{\link{require}}).
 
     MER-estimators are available for the methods \code{\link{svymean_huber}},
     \code{\link{svytotal_huber}}, \code{\link{svymean_tukey}} and
@@ -42,9 +43,18 @@ Hulliger, B. (1995). Outlier Robust Horvitz-Thompson Estimators.
 \link[=robsurvey-package]{Overview} (of all implemented functions)
 }
 \examples{
+head(losdata)
+
 library(survey)
-data(losdata)
-dn <- svydesign(ids = ~1, fpc = ~fpc, weights = ~weight, data = losdata)
+# Survey design for simple random sampling without replacement
+dn <- if (packageVersion("survey") >= "4.2") {
+        # survey design with pre-calibrated weights
+        svydesign(ids = ~1, fpc = ~fpc, weights = ~weight, data = losdata,
+                  calibrate.formula = ~1)
+    } else {
+        # legacy mode
+        svydesign(ids = ~1, fpc = ~fpc, weights = ~weight, data = losdata)
+    }
 
 # M-estimator of the total with tuning constant k = 8
 m <- svymean_huber(~los, dn, type = "rhj", k = 8)

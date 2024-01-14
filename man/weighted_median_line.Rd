@@ -30,8 +30,8 @@ weighted_median_line(x, y = NULL, w, type = "slopes", na.rm = FALSE)
                 }
                 \item{\code{type = "products"}:}{The slope is computed as
                     \deqn{b1 = \frac{m\big([y - m(y,w)][x - m(x,w)], w\big)}
-                    {m\big([x - m(x,w)]^2, w\big)}.}
-                    {m([y - m(y, w)][x - m(x, w)], w) / m([x - m(x, w)]^2, w).}
+                        {m\big([x - m(x,w)]^2, w\big)}.}{%
+                        m([y - m(y, w)][x - m(x, w)], w) / m([x - m(x, w)]^2, w).}
                 }
             }
         }
@@ -49,15 +49,16 @@ weighted_median_line(x, y = NULL, w, type = "slopes", na.rm = FALSE)
 \examples{
 x <- c(1, 2, 4, 5)
 y <- c(3, 2, 7, 4)
-weighted_line(y~x, w=rep(1, length(x)))
-weighted_median_line(y~x, w = rep(1, length(x)))
-m <- weighted_median_line(y~x, w = rep(1, length(x)), type = "prod")
+weighted_line(y ~ x, w = rep(1, length(x)))
+weighted_median_line(y ~ x, w = rep(1, length(x)))
+m <- weighted_median_line(y ~ x, w = rep(1, length(x)), type = "prod")
 m
 coef(m)
 fitted(m)
 residuals(m)
 
-data(cars)
+# cars data
+head(cars)
 with(cars, weighted_median_line(dist ~ speed, w = rep(1, length(dist))))
 with(cars, weighted_median_line(dist ~ speed, w = rep(1, length(dist)),
 type = "prod"))

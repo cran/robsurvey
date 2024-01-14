@@ -63,12 +63,17 @@ Tillé, Y. (2006). \emph{Sampling Algorithms}. New York: Springer-Verlag.
     \code{\link{MU284strat}}
 }
 \examples{
-data(MU284pps)
+head(MU284pps)
 
-\dontrun{
-# survey design for counties data (pkg survey is required)
 library(survey)
-dn <- svydesign(ids = ~LABEL, fpc = ~pi, data = MU284pps, pps = "brewer")
-}
+# Survey design with inclusion probabilities proportional to size
+dn <- if (packageVersion("survey") >= "4.2") {
+        # survey design with pre-calibrated weights
+        svydesign(ids = ~LABEL, fpc = ~pi, data = MU284pps, pps = "brewer",
+                  calibrate.formula = ~1)
+    } else {
+        # legacy mode
+        svydesign(ids = ~LABEL, fpc = ~pi, data = MU284pps, pps = "brewer")
+    }
 }
 \keyword{datasets}

@@ -6,10 +6,10 @@
 \title{Weighted Winsorized Mean and Total}
 \usage{
 svymean_winsorized(x, design, LB = 0.05, UB = 1 - LB, na.rm = FALSE,
-    trim_var = FALSE)
+                   trim_var = FALSE)
 svymean_k_winsorized(x, design, k, na.rm = FALSE, trim_var = FALSE)
 svytotal_winsorized(x, design, LB = 0.05, UB = 1 - LB, na.rm = FALSE,
-    trim_var = FALSE)
+                    trim_var = FALSE)
 svytotal_k_winsorized(x, design, k, na.rm = FALSE, trim_var = FALSE)
 }
 \arguments{
@@ -32,7 +32,8 @@ svytotal_k_winsorized(x, design, k, na.rm = FALSE, trim_var = FALSE)
     Weighted winsorized mean and total
 }
 \details{
-    Package \pkg{survey} must be loaded in order to use the functions.
+    Package \pkg{survey} must be attached to the search path in order to use
+    the functions (see \code{\link{library}} or \code{\link{require}}).
 
     \describe{
         \item{Characteristic.}{Population mean or total. Let \eqn{\mu}
@@ -109,12 +110,19 @@ Shao, J. (1994). L-Statistics in Complex Survey Problems.
 \code{\link{weighted_total_k_winsorized}}
 }
 \examples{
-data(workplace)
+head(workplace)
 
 library(survey)
-# Survey design for simple random sampling without replacement
-dn <- svydesign(ids = ~ID, strata = ~strat, fpc = ~fpc, weights = ~weight,
-    data = workplace)
+# Survey design for stratified simple random sampling without replacement
+dn <- if (packageVersion("survey") >= "4.2") {
+        # survey design with pre-calibrated weights
+        svydesign(ids = ~ID, strata = ~strat, fpc = ~fpc, weights = ~weight,
+                  data = workplace, calibrate.formula = ~-1 + strat)
+    } else {
+        # legacy mode
+        svydesign(ids = ~ID, strata = ~strat, fpc = ~fpc, weights = ~weight,
+                  data = workplace)
+    }
 
 # Estimated winsorized population mean (5\% symmetric winsorization)
 svymean_winsorized(~employment, dn, LB = 0.05)

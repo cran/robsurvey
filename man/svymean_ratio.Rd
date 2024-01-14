@@ -6,7 +6,7 @@
 \usage{
 svytotal_ratio(object, total, variance = "wu", keep_object = TRUE)
 svymean_ratio(object, total, N = NULL, variance = "wu",
-    keep_object = TRUE, N_unknown = FALSE)
+              keep_object = TRUE, N_unknown = FALSE)
 }
 \arguments{
     \item{object}{an object of class \code{[ratio]}, e.g., result of
@@ -28,7 +28,8 @@ svymean_ratio(object, total, N = NULL, variance = "wu",
     total with Huber and Tukey biweight (bisquare) psi-function.
 }
 \details{
-    Package \pkg{survey} must be loaded in order to use the functions.
+    Package \pkg{survey} must be attached to the search path in order to use
+    the functions (see \code{\link{library}} or \code{\link{require}}).
 
     The (robust) ratio predictor of the population total or mean is
     computed in two steps.
@@ -91,21 +92,39 @@ regression \eqn{M}- and \eqn{GM}-estimators
 \eqn{M}-estimators
 }
 \examples{
-data(workplace)
+head(workplace)
 
 library(survey)
-# Survey design for simple random sampling without replacement
-dn <- svydesign(ids = ~ID, strata = ~strat, fpc = ~fpc, weights = ~weight,
-    data = workplace)
+# Survey design for stratified simple random sampling without replacement
+dn <- if (packageVersion("survey") >= "4.2") {
+        # survey design with pre-calibrated weights
+        svydesign(ids = ~ID, strata = ~strat, fpc = ~fpc, weights = ~weight,
+                  data = workplace, calibrate.formula = ~-1 + strat)
+    } else {
+        # legacy mode
+        svydesign(ids = ~ID, strata = ~strat, fpc = ~fpc, weights = ~weight,
+                  data = workplace)
+    }
 
 # Robust ratio M-estimator with Huber psi-function
 rat <- svyratio_huber(~payroll, ~ employment, dn, k = 5)
 
-# Robust ratio predictor
+# Summary of the ratio estimate
+summary(rat)
+
+# Diagnostic plots of the ration/regression M-estimate (e.g.,
+# standardized residuals against fitted values)
+plot(rat, which = 1L)
+
+# Plot of the robustness weights of the ratio/regression M-estimate
+# against its residuals
+plot(residuals(rat), robweights(rat))
+
+# Robust ratio predictor of the population mean
 m <- svymean_ratio(rat, total = 1001233, N = 90840)
 m
 
-# Summarize
+# Summary of the ratio estimate of the population mean
 summary(m)
 
 # Extract estimate

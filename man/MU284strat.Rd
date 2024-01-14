@@ -75,13 +75,19 @@ Tillé, Y. and Matei, A. (2021). \emph{sampling: Survey Sampling}.
     \code{\link{MU284pps}}
 }
 \examples{
-data(MU284strat)
+head(MU284strat)
 
-\dontrun{
-# survey design for counties data (pkg survey is required)
 library(survey)
-dn <- svydesign(ids = ~LABEL, strata = ~Stratum, fpc = ~fpc,
-    weights = ~weights, data = MU284strat)
-}
+# Survey design for stratified simple random sampling without replacement
+dn <- if (packageVersion("survey") >= "4.2") {
+        # survey design with pre-calibrated weights
+        svydesign(ids = ~LABEL, strata = ~Stratum, fpc = ~fpc,
+                  weights = ~weights, data = MU284strat,
+                  calibrate.formula = ~-1 + Stratum)
+    } else {
+        # legacy mode
+        svydesign(ids = ~LABEL, strata = ~Stratum, fpc = ~fpc,
+                  weights = ~weights, data = MU284strat)
+    }
 }
 \keyword{datasets}

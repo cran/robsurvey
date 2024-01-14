@@ -4,9 +4,9 @@
 \title{Robust Generalized Regression Predictor (GREG) of the Mean and Total}
 \usage{
 svytotal_reg(object, totals, N = NULL, type, k = NULL, check.names = TRUE,
-    keep_object = TRUE)
+             keep_object = TRUE)
 svymean_reg(object, totals, N = NULL, type, k = NULL, check.names = TRUE,
-    keep_object = TRUE, N_unknown = FALSE)
+            keep_object = TRUE, N_unknown = FALSE)
 }
 \arguments{
     \item{object}{an object of class \code{[svyreg_rob]}, e.g., result of
@@ -34,7 +34,8 @@ svymean_reg(object, totals, N = NULL, type, k = NULL, check.names = TRUE,
     and robust GREG \eqn{M}-estimator predictor
 }
 \details{
-    Package \pkg{survey} must be loaded in order to use the functions.
+    Package \pkg{survey} must be attached to the search path in order to use
+    the functions (see \code{\link{library}} or \code{\link{require}}).
 
     The (robust) GREG predictor of the population total or mean is
     computed in two steps.
@@ -170,15 +171,33 @@ ratio predictors
 regression \eqn{M}- and \eqn{GM}-estimators
 }
 \examples{
-data(workplace)
+head(workplace)
 
 library(survey)
-# Survey design for simple random sampling without replacement
-dn <- svydesign(ids = ~ID, strata = ~strat, fpc = ~fpc, weights = ~weight,
-    data = workplace)
+# Survey design for stratified simple random sampling without replacement
+dn <- if (packageVersion("survey") >= "4.2") {
+        # survey design with pre-calibrated weights
+        svydesign(ids = ~ID, strata = ~strat, fpc = ~fpc, weights = ~weight,
+                  data = workplace, calibrate.formula = ~-1 + strat)
+    } else {
+        # legacy mode
+        svydesign(ids = ~ID, strata = ~strat, fpc = ~fpc, weights = ~weight,
+                  data = workplace)
+    }
 
 # Robust regression M-estimator with Huber psi-function
 reg <- svyreg_huberM(payroll ~ employment, dn, k = 3)
+
+# Summary of the regression M-estimate
+summary(reg)
+
+# Diagnostic plots of the regression M-estimate (e.g., standardized
+# residuals against fitted values)
+plot(reg, which = 1L)
+
+# Plot of the robustness weights of the regression M-estimate against
+# its residuals
+plot(residuals(reg), robweights(reg))
 
 # ADU (asymptotically design unbiased) estimator
 m <- svytotal_reg(reg, totals = 1001233, 90840, type = "ADU")
@@ -189,7 +208,7 @@ m
 m <- svymean_reg(reg, totals = 1001233, 90840, type = "huber", k = 20)
 m
 
-# Summarize
+# Summary of the robust GREG estimate
 summary(m)
 
 # Extract estimate
