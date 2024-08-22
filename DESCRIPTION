@@ -1,7 +1,7 @@
 Package: robsurvey
 Type: Package
 Title: Robust Survey Statistics Estimation
-Version: 0.6
+Version: 0.7
 Authors@R: c(person(
         given = "Beat",
         family = "Hulliger",
@@ -40,11 +40,11 @@ Depends: R (>= 3.5.0)
 Imports: grDevices, KernSmooth, stats, survey (>= 3.35-1), utils
 Suggests: hexbin, knitr, MASS, rmarkdown, wbacon
 VignetteBuilder: knitr, rmarkdown
-Packaged: 2024-01-14 18:23:44 UTC; tobias
+Packaged: 2024-08-21 17:54:28 UTC; tobias
 Author: Beat Hulliger [aut] (<https://orcid.org/0000-0001-5252-8606>),
   Tobias Schoch [aut, cre] (<https://orcid.org/0000-0002-1640-3395>),
   Martin Sterchi [ctr, com],
   R-core [ctb, cph] (for zeroin2.c)
 Maintainer: Tobias Schoch <tobias.schoch@fhnw.ch>
 Repository: CRAN
-Date/Publication: 2024-01-14 18:50:02 UTC
+Date/Publication: 2024-08-22 07:10:02 UTC

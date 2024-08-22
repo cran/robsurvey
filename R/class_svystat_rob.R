@@ -6,6 +6,7 @@
 #     + psi: [int]
 #     + psi_fun: [char]
 #     + k: [numeric]
+#     + domain: [logical]
 #  + estimate: [numeric] vector of estimated regression coefficients
 #  + scale: [numeric] scale estimate
 #  + robust [list]
@@ -31,17 +32,19 @@
 #  + call: [call object]
 #
 # constructor for empty object of class svystat_rob
-.new_svystat_rob <- function(characteristic, yname, string, call,
-    design, class = NULL, ...)
+.new_svystat_rob <- function(characteristic, yname, string, domain,
+                             design, call, class = NULL, ...)
 {
     structure(list(characteristic = characteristic,
-        estimator = list(string = string, ...), estimate = setNames(NA, yname),
-        variance = NA, residuals = NA, model = NA, design = design,
-        call = call), class = c("svystat_rob", class))
+        estimator = list(string = string, domain = domain, ...),
+        estimate = setNames(NA, yname), variance = NA, residuals = NA,
+        model = NA, design = design, call = call),
+        class = c("svystat_rob", class))
 }
 # summary method for robust survey statistic object
-summary.svystat_rob <- function(object, digits = max(3L, getOption("digits") -
-    3L), ...)
+summary.svystat_rob <- function(object,
+                                digits = max(3L, getOption("digits") - 3L),
+                                ...)
 {
     cat(object$estimator$string, "of the population", object$characteristic,
         "\n")
@@ -53,19 +56,19 @@ summary.svystat_rob <- function(object, digits = max(3L, getOption("digits") -
     if (!is.null(object$optim)) {
         cat("Robustness:\n")
         cat("  Psi-function:", object$robust$psifunction, "with k =",
-	        object$estimator$k, "\n")
+            object$estimator$k, "\n")
         cat("  mean of robustness weights:",
-	        round(mean(object$robust$robweights), digits), "\n")
+	        round(mean(robweights.svystat_rob(object)), digits), "\n")
         cat("\n")
         cat("Algorithm performance:\n")
         if (object$optim$converged) {
             cat("  converged in", object$optim$niter, "iterations\n")
 	        cat(paste0("  with residual scale (weighted ",
-                if (object$optim$used_iqr) "IQR" else "MAD", "): ",
-                format(object$scale, digits = digits), "\n\n"))
+                       if (object$optim$used_iqr) "IQR" else "MAD", "): ",
+                       format(object$scale, digits = digits), "\n\n"))
         } else {
 	        cat("  FAILURE of convergence in", object$optim$niter,
-	            " iterations\n\n")
+                " iterations\n\n")
         }
     }
     cat("Sampling design:\n")
@@ -107,15 +110,15 @@ robweights <- function(object)
 # extract robustness weights from robust survey statistic object
 robweights.svystat_rob <- function(object)
 {
-    tmp <- object$robust$robweights
-    if (is.null(tmp))
+    robwgt <- object$robust$robweights
+    if (is.null(robwgt))
         stop("Robustness weights are not available\n")
-    else
-        tmp
+    else 
+        robwgt
 }
 # print method for robust survey statistic object
 print.svystat_rob <- function(x, digits = max(3L, getOption("digits") - 3L),
-    ...)
+                              ...)
 {
     conv <- TRUE
     if (!is.null(x$optim))
@@ -130,14 +133,21 @@ print.svystat_rob <- function(x, digits = max(3L, getOption("digits") - 3L),
         cat("(you may use the 'summary' method to learn more)\n")
     }
 }
-
 # extract estimate of scale
 scale.svystat_rob <- function(x, ...)
 {
     x$scale
 }
 # compute estimated mse, more precisely, estimated risk
-mse <- function(object)
+mse <- function(object, ...)
+{
+    UseMethod("mse", object)
+}
+mse.svystat <- function(object, ...)
+{
+    unname(as.numeric(attr(object, "var")))
+}
+mse.svystat_rob <- function(object, ...)
 {
     call <- object$call
     # reference estimator
@@ -159,7 +169,7 @@ mse <- function(object)
         ref <- coef.svystat_rob(eval(call))
     } else {                                        # otherwise
         ref <- weighted_total(object$model$y, object$model$w,
-            na.rm = !is.null(call$na.rm))
+                              na.rm = !is.null(call$na.rm))
         if (object$characteristic == "mean")
             ref <- ref / sum(object$model$w)
     }

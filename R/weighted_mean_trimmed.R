@@ -31,9 +31,9 @@ weighted_mean_trimmed <- function(x, w, LB = 0.05, UB = 1 - LB, info = FALSE,
 	        residuals = resid,
 	        model = list(y = dat$x, w = dat$w),
 	        design = NA, call = match.call())
-        return(res)
+        res
     } else {
-        return(tmp$loc)
+        tmp$loc
     }
 }
 # weighted trimmed total
@@ -42,11 +42,11 @@ weighted_total_trimmed <- function(x, w, LB = 0.05, UB = 1 - LB, info = FALSE,
 {
     res <- weighted_mean_trimmed(x, w, LB, UB, info, na.rm)
     if (length(res) == 1) {
-        return(res * sum(w))
+        res * sum(w)
     } else {
         res$characteristic <- "total"
         res$estimate <- res$estimate * sum(w)
         res$call <- match.call()
-        return(res)
+        res
     }
 }

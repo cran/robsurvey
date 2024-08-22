@@ -5,6 +5,7 @@ weighted_mean_winsorized <- function(x, w, LB = 0.05, UB = 1 - LB,
     dat <- .check_data_weights(x, w, na.rm)
     if (is.null(dat))
         return(NA)
+
     if (LB >= UB)
         stop("Argument 'LB' must be smaller than 'UB'!", call. = FALSE)
     if (LB < 0)
@@ -25,9 +26,9 @@ weighted_mean_winsorized <- function(x, w, LB = 0.05, UB = 1 - LB,
 	        residuals = resid,
 	        model = list(y = dat$x, w = dat$w),
 	        design = NA, call = match.call())
-        return(res)
+        res
     } else {
-        return(tmp$loc)
+        tmp$loc
     }
 }
 # one-sided weighted k winsorized mean
@@ -40,11 +41,12 @@ weighted_mean_k_winsorized <- function(x, w, k, info = FALSE, na.rm = FALSE)
         k <- as.integer(k)
         cat(paste0("Argument 'k' is casted to integer: k = ", k,"\n"))
     }
+    if (k < 1)
+        stop("k must larger than 1\n", call. = FALSE)
+
     n <- dat$n
     if (k >= n)
         stop("k must be smaller than n\n", call. = FALSE)
-    if (k < 1)
-        stop("k must larger than 1\n", call. = FALSE)
 
     tmp <- .C(C_wkwinsorizedmean, x = as.double(dat$x), w = as.double(dat$w),
         k = as.integer(k), loc = as.double(numeric(1)),
@@ -58,11 +60,11 @@ weighted_mean_k_winsorized <- function(x, w, k, info = FALSE, na.rm = FALSE)
 	        estimate = tmp$loc,
 	        variance = NA,
 	        residuals = dat$x - tmp$loc,
-	        model = list(y = x, w = w),
+	        model = list(y = dat$x, w = dat$w),
 	        design = NA, call = match.call())
-        return(res)
+        res
     } else {
-        return(tmp$loc)
+        tmp$loc
     }
 }
 # weighted winsorized total
@@ -71,12 +73,12 @@ weighted_total_winsorized <- function(x, w, LB = 0.05, UB = 1 - LB,
 {
     res <- weighted_mean_winsorized(x, w, LB, UB, info, na.rm)
     if (length(res) == 1){
-        return(res * sum(w))
+        res * sum(w)
     } else {
         res$characteristic <- "total"
         res$estimate <- res$estimate * sum(w)
         res$call <- match.call()
-        return(res)
+        res
     }
 }
 # one-sided weighted k winsorized total
@@ -84,11 +86,11 @@ weighted_total_k_winsorized <- function(x, w, k, info = FALSE, na.rm = FALSE)
 {
     res <- weighted_mean_k_winsorized(x, w, k, info, na.rm)
     if (length(res) == 1){
-        return(res * sum(w))
+        res * sum(w)
     } else {
         res$characteristic <- "total"
         res$estimate <- res$estimate * sum(w)
         res$call <- match.call()
-        return(res)
+        res
    }
 }

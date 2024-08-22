@@ -1,5 +1,6 @@
 # ratio estimator of the total
-svytotal_ratio <- function(object, total, variance = "wu", keep_object = TRUE)
+svytotal_ratio <- function(object, total, variance = "wu", keep_object = TRUE,
+                           ...)
 {
     if (!inherits(object, "ratio"))
         stop(paste0("The function cannot be used for an object of class '",
@@ -25,15 +26,16 @@ svytotal_ratio <- function(object, total, variance = "wu", keep_object = TRUE)
         variance = stderr^2), class = "svystat_rob")
     if (keep_object)
         res$object <- object
+    # return
     res
 }
 # ratio estimator of the mean
 svymean_ratio <- function(object, total, N = NULL, variance = "wu",
-    keep_object = TRUE, N_unknown = FALSE)
+                          keep_object = TRUE, N_unknown = FALSE, ...)
 {
     if (!inherits(object, "ratio"))
         stop(paste0("The function cannot be used for an object of class '",
-            class(object), "'\n"))
+                    class(object), "'\n"))
 
     .check_class(object)
     stopifnot(is.numeric(total), total >= 0)
@@ -60,6 +62,7 @@ svymean_ratio <- function(object, total, N = NULL, variance = "wu",
         variance = stderr^2), class = "svystat_rob")
     if (keep_object)
         res$object <- object
+    # return
     res
 }
 # standard error; estimators of Wu (1982, Biometrika): v0, v1, and v2
@@ -79,6 +82,6 @@ svymean_ratio <- function(object, total, N = NULL, variance = "wu",
                  call. = FALSE)
         else
             stop(paste0("The function cannot be used for an object of class '",
-                class(object), "'\n"), call. = FALSE)
+                        class(object), "'\n"), call. = FALSE)
     }
 }

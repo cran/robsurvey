@@ -1,6 +1,6 @@
 # robust Huber M-estimator of regression (depends on pkg survey)
 svyreg_huberM <- function(formula, design, k, var = NULL, na.rm = FALSE,
-    asym = FALSE, verbose = TRUE, ...)
+                          asym = FALSE, verbose = TRUE, ...)
 {
     dat <- .check_regression(formula, design, var, NULL, na.rm)
     # add a 'reduced' survey.design2 object
@@ -20,7 +20,7 @@ svyreg_huberM <- function(formula, design, k, var = NULL, na.rm = FALSE,
             class = "svyreg_rob"))
     # otherwise
     res <- robsvyreg(dat$x, dat$y, dat$w, k, if (asym) 1 else 0, 0, dat$xwgt,
-        dat$var, verbose, ...)
+                     dat$var, verbose, ...)
     res$design <- dat$design
     res$terms <- dat$terms
     res$call <- match.call()
@@ -30,7 +30,7 @@ svyreg_huberM <- function(formula, design, k, var = NULL, na.rm = FALSE,
 }
 # deprecated function kept for compatibility reasons
 svyreg_huber <- function(formula, design, k, var = NULL, na.rm = FALSE,
-    asym = FALSE, verbose = TRUE, ...)
+                         asym = FALSE, verbose = TRUE, ...)
 {
     .Deprecated("svyreg_huberM")
     tmp <- svyreg_huberM(formula, design, k, var, na.rm, asym, verbose, ...)
@@ -39,7 +39,8 @@ svyreg_huber <- function(formula, design, k, var = NULL, na.rm = FALSE,
 }
 # robust Huber GM-estimator of regression (depends on pkg survey)
 svyreg_huberGM <- function(formula, design, k, type = c("Mallows", "Schweppe"),
-    xwgt, var = NULL, na.rm = FALSE, asym = FALSE, verbose = TRUE, ...)
+                           xwgt, var = NULL, na.rm = FALSE, asym = FALSE,
+                           verbose = TRUE, ...)
 {
     type <- match.arg(type)
     type_int <- switch(type, "Mallows" = 1L, "Schweppe" = 2L)
@@ -48,7 +49,7 @@ svyreg_huberGM <- function(formula, design, k, type = c("Mallows", "Schweppe"),
     if (NCOL(xwgt) > 1) {
         xwgt <- as.numeric(xwgt[, 1])
         warning("Only first column of argument 'xwgt' is used\n",
-            class. = FALSE)
+                class. = FALSE)
     }
     dat <- .check_regression(formula, design, var, xwgt, na.rm)
     # add a 'reduced' survey.design2 object
@@ -68,7 +69,7 @@ svyreg_huberGM <- function(formula, design, k, type = c("Mallows", "Schweppe"),
             class = "svyreg_rob"))
     # otherwise
     res <- robsvyreg(dat$x, dat$y, dat$w, k, if (asym) 1 else 0, type_int,
-        dat$xwgt, dat$var, verbose, ...)
+                     dat$xwgt, dat$var, verbose, ...)
     res$design <- dat$design
     res$terms <- dat$terms
     res$call <- match.call()

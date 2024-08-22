@@ -1,6 +1,6 @@
 /* Functions for winsorized and trimmed estimators of location
 
-   Copyright (C) 2020-21 Tobias Schoch (e-mail: tobias.schoch@gmail.com)
+   Copyright (C) 2020-24 Tobias Schoch (e-mail: tobias.schoch@gmail.com)
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -20,6 +20,8 @@
    Higham (2002). Accuracy and Stability of Numerical Algorithms, 2nd ed.,
        Philadelphia: SIAM.
 */
+
+#define PRINT_OUT(...) Rprintf(__VA_ARGS__)
 
 #include "trimmedwinsorized.h"
 
@@ -46,10 +48,14 @@ void wtrimmedmean(double* restrict x, double* restrict w, double *lo,
 
     // quantiles
     double quantile_lo, quantile_hi;
-    double *work_2n = (double*) Calloc(2 * *n, double);
+    double *work_2n = (double*) R_Calloc(2 * *n, double);
+    if (work_2n == NULL) {
+        PRINT_OUT("Error: Cannot allocate memory\n");
+        return;
+    }
     wquantile_noalloc(x, w, work_2n, n, lo, &quantile_lo);
     wquantile_noalloc(x, w, work_2n, n, hi, &quantile_hi);
-    Free(work_2n);
+    R_Free(work_2n);
 
     // Kahan compensated (weighted) summation; see e.g., Higham (2002, ch. 4.3)
     double sum_w = 0.0, sum_x = 0.0, comp = 0.0, tmp, a;
@@ -93,10 +99,14 @@ void wwinsorizedmean(double* restrict x, double* restrict w, double *lo,
 
     // quantiles
     double quantile_lo, quantile_hi;
-    double *work_2n = (double*) Calloc(2 * *n, double);
+    double *work_2n = (double*) R_Calloc(2 * *n, double);
+    if (work_2n == NULL) {
+        PRINT_OUT("Error: Cannot allocate memory\n");
+        return;
+    }
     wquantile_noalloc(x, w, work_2n, n, lo, &quantile_lo);
     wquantile_noalloc(x, w, work_2n, n, hi, &quantile_hi);
-    Free(work_2n);
+    R_Free(work_2n);
 
     // Kahan compensated (weighted) winsorized summation; see e.g., Higham
     // (2002, ch. 4.3)
@@ -161,3 +171,4 @@ void wkwinsorizedmean(double* restrict x, double* restrict w, int *k,
     // weighted ecdf(x[k])
     *prob = below_sum_w / sum_w;
 }
+#undef PRINT_OUT

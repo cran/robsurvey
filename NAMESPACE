@@ -10,8 +10,9 @@ importFrom("graphics", abline, mtext, panel.smooth, par, points,
 importFrom("stats", fitted, qqnorm, residuals, printCoefmat, pt,
     setNames, optim, complete.cases, model.frame, model.matrix,
     model.response, na.pass, terms, terms.formula, as.formula)
-importFrom("KernSmooth", dpik, locpoly) 
+importFrom("KernSmooth", dpik, locpoly)
 importFrom("utils", packageVersion)
+importFrom("survey", svyrecvar)
 
 # export
 S3method(print,svystat_rob)
@@ -115,6 +116,13 @@ export(weighted_total_tukey)
 export(weighted_total_winsorized)
 
 export(mer)
+
 export(mse)
+S3method(mse,svystat_rob)
+S3method(mse,svystat)
 
 export(simpsonWgt)
+
+export(pps_probabilities)
+export(pps_draw)
+S3method(print,prob_pps)

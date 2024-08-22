@@ -1,7 +1,7 @@
 /* Weighted Huber proposal 2 estimator of location and scale, initialized
    by, respectively, the weighted median and the weighted interquartile range
 
-   Copyright (C) 2020-21 Tobias Schoch (e-mail: tobias.schoch@gmail.com)
+   Copyright (C) 2020-24 Tobias Schoch (e-mail: tobias.schoch@gmail.com)
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -31,6 +31,8 @@
 #define _POWER2(_x) ((_x) * (_x))
 #define _MIN(_a, _b) (((_a) < (_b)) ? (_a) : (_b))
 #define _MAX(_a, _b) (((_a) > (_b)) ? (_a) : (_b))
+
+#define PRINT_OUT(...) Rprintf(__VA_ARGS__)
 
 // declaration of 'local' functions (inline imperative is GCC specific)
 static inline double kappa_huber(const double) __attribute__((always_inline));
@@ -77,11 +79,20 @@ void whuber2(double* restrict x, double* restrict w, double* restrict robwgt,
 
     // initialize location (weighted median)
     double p50 = 0.5;
-    double* restrict work_2n = (double*) Calloc(2 * *n, double);
+    double* restrict work_2n = (double*) R_Calloc(2 * *n, double);
+    if (work_2n == NULL) {
+        PRINT_OUT("Error: Cannot allocate memory\n");
+        return;
+    }
     wquantile_noalloc(x, w, work_2n, n, &p50, &loc0);
 
     // initialize variable for winsorized x-variable
-    double* restrict x_wins = (double*) Calloc(*n, double);
+    double* restrict x_wins = (double*) R_Calloc(*n, double);
+    if (x_wins == NULL) {
+        PRINT_OUT("Error: Cannot allocate memory\n");
+        R_Free(work_2n);
+        return;
+    }
 
     // initialize scale estimate by (weighted) interquartile range (IQR is
     // normalized to be a Fisher consistent estimate of the scale at the
@@ -155,7 +166,7 @@ void whuber2(double* restrict x, double* restrict w, double* restrict robwgt,
     for (int i = 0; i < *n; i++)
         robwgt[i] = _WGT_HUBER((x[i] - *loc) / *scale, *k);
 
-    Free(x_wins); Free(work_2n);
+    R_Free(x_wins); R_Free(work_2n);
 }
 
 /******************************************************************************\
@@ -176,3 +187,4 @@ static inline double kappa_huber(const double k)
 #undef _POWER2
 #undef _MIN
 #undef _MAX
+#undef PRINT_OUT

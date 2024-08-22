@@ -1,10 +1,10 @@
 # GREG predictor of the total
 svytotal_reg <- function(object, totals, N = NULL, type, k = NULL,
-    check.names = TRUE, keep_object = TRUE)
+                         check.names = TRUE, keep_object = TRUE, ...)
 {
     if (!inherits(object, "svyreg_rob"))
         stop(paste0("The function cannot be used for an object of class '",
-            class(object), "'\n"))
+                    class(object), "'\n"))
     model <- object$model
     # check whether 'type' and 'k' are correctly specified
     type <- .check_k(type, k)
@@ -19,8 +19,8 @@ svytotal_reg <- function(object, totals, N = NULL, type, k = NULL,
     ri <- model$y - as.numeric(model$x %*% object$estimate)
     # variance estimate
     design <- object$design
-    v <- survey::svyrecvar(ri * gi, design$cluster, design$strata, design$fpc,
-        postStrata = design$postStrata)
+    v <- svyrecvar(ri * gi, design$cluster, design$strata, design$fpc,
+                   postStrata = design$postStrata)
     # return
     model$coef <- object$estimate
     model$call <- object$call
@@ -32,15 +32,17 @@ svytotal_reg <- function(object, totals, N = NULL, type, k = NULL,
         gweights = gi), class = "svystat_rob")
     if (keep_object)
         res$object <- object
+    # return
     res
 }
 # GREG predictor of the mean
 svymean_reg <- function(object, totals, N = NULL, type, k = NULL,
-    check.names = TRUE, keep_object = TRUE, N_unknown = FALSE)
+                        check.names = TRUE, keep_object = TRUE,
+                        N_unknown = FALSE, ...)
 {
     if (!inherits(object, "svyreg_rob"))
         stop(paste0("The function cannot be used for an object of class '",
-            class(object), "'\n"))
+                    class(object), "'\n"))
     model <- object$model
     # check whether 'type' and 'k' are correctly specified
     type <- .check_k(type, k)
@@ -59,8 +61,8 @@ svymean_reg <- function(object, totals, N = NULL, type, k = NULL,
     ri <- model$y - as.numeric(model$x %*% object$estimate)
     # variance estimate
     design <- object$design
-    v <- survey::svyrecvar(ri * gi, design$cluster, design$strata,
-        design$fpc, postStrata = design$postStrata)
+    v <- svyrecvar(ri * gi, design$cluster, design$strata, design$fpc,
+                   postStrata = design$postStrata)
     # return
     model$coef <- object$estimate
     model$call <- object$call
@@ -72,6 +74,7 @@ svymean_reg <- function(object, totals, N = NULL, type, k = NULL,
         gweights = gi), class = "svystat_rob")
     if (keep_object)
         res$object <- object
+    # return
     res
 }
 # g-weights
@@ -95,6 +98,7 @@ svymean_reg <- function(object, totals, N = NULL, type, k = NULL,
     # account for heteroscedasticity
     if (!is.null(object$model$var))
         qi <- qi / object$model$var
+    # return
     qi
 }
 # bi's without sampling weight (actually, ri's in Wright's QR-estimator)
@@ -118,6 +122,7 @@ svymean_reg <- function(object, totals, N = NULL, type, k = NULL,
     # multiplicative factor for Mallows type GM-estimator
     if (object$estimator$type == 1)
         bi <- bi * object$model$xwgt
+    # return
     bi
 }
 # Modified Huber psi-function of Duchsene (1999)
@@ -137,17 +142,17 @@ svymean_reg <- function(object, totals, N = NULL, type, k = NULL,
     if (missing(type))
         stop("Argument 'type' is missing\n", call. = FALSE)
     type <- match.arg(type, c("projective", "ADU", "huber", "tukey", "lee",
-        "BR", "duchesne"))
+                              "BR", "duchesne"))
     switch(type,
         "ADU" = {
             if (!is.null(k))
                 warning("Argument 'k' is ignored\n", call. = FALSE,
-                    immediate. = TRUE)
+                        immediate. = TRUE)
         },
         "projective" = {
             if (!is.null(k))
                 warning("Argument 'k' is ignored\n", call. = FALSE,
-                    immediate. = TRUE)
+                        immediate. = TRUE)
         },
         "huber" = stopifnot(is.numeric(k), length(k) == 1, k > 0),
         "tukey" = stopifnot(is.numeric(k), length(k) == 1, k > 0),
@@ -210,7 +215,7 @@ svymean_reg <- function(object, totals, N = NULL, type, k = NULL,
     if (check.names && !is.null(name_totals)) {
         if (!all(name_totals == name_coef))
             stop("Variable names do not match (check.names = TRUE)",
-                call. = FALSE)
+                 call. = FALSE)
     }
 
     if (has_intercept)

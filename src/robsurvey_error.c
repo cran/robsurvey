@@ -1,6 +1,6 @@
 /* Error handling function and array with error messages
 
-   Copyright (C) 2020-21 Tobias Schoch (e-mail: tobias.schoch@gmail.com)
+   Copyright (C) 2020-24 Tobias Schoch (e-mail: tobias.schoch@gmail.com)
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -28,7 +28,9 @@ const char* const ROBSURVEY_ERROR_STRINGS[] = {
     "Mallows normalization constant: Algorithm did not converge",
     "QR factorization: dgeqrf failed",
     "QR factorization: dtrtri failed",
-    "QR factorization: dorgqr failed"
+    "QR factorization: dorgqr failed",
+    "Cholesky factorization: dpotrf failed",
+    "Cholesky factorization: dpotri failed",
 };
 
 // obtain a human readable error message

@@ -1,6 +1,6 @@
 # robust Tukey biweight M-estimator of regression (depends on pkg survey)
 svyreg_tukeyM <- function(formula, design, k, var = NULL, na.rm = FALSE,
-    verbose = TRUE, ...)
+                          verbose = TRUE, ...)
 {
     dat <- .check_regression(formula, design, var, NULL, na.rm)
     # add a 'reduced' survey.design2 object
@@ -20,7 +20,7 @@ svyreg_tukeyM <- function(formula, design, k, var = NULL, na.rm = FALSE,
             class = "svyreg_rob"))
     # otherwise
     res <- robsvyreg(dat$x, dat$y, dat$w, k, 2, 0, dat$xwgt, dat$var, verbose,
-        ...)
+                     ...)
     res$design <- dat$design
     res$terms <- dat$terms
     res$call <- match.call()
@@ -30,7 +30,7 @@ svyreg_tukeyM <- function(formula, design, k, var = NULL, na.rm = FALSE,
 }
 # deprecated function kept for compatibility reasons
 svyreg_tukey <- function(formula, design, k, var = NULL, na.rm = FALSE,
-    verbose = TRUE, ...)
+                         verbose = TRUE, ...)
 {
     .Deprecated("svyreg_tukeyM")
     tmp <- svyreg_tukeyM(formula, design, k, var, na.rm, verbose, ...)
@@ -39,7 +39,8 @@ svyreg_tukey <- function(formula, design, k, var = NULL, na.rm = FALSE,
 }
 # robust Tukey biweight GM-estimator of regression (depends on pkg survey)
 svyreg_tukeyGM <- function(formula, design, k, type = c("Mallows", "Schweppe"),
-    xwgt, var = NULL, na.rm = FALSE, verbose = TRUE, ...)
+                           xwgt, var = NULL, na.rm = FALSE, verbose = TRUE,
+                           ...)
 {
     type <- match.arg(type)
     type_int <- switch(type, "Mallows" = 1L, "Schweppe" = 2L)
@@ -48,7 +49,7 @@ svyreg_tukeyGM <- function(formula, design, k, type = c("Mallows", "Schweppe"),
     if (NCOL(xwgt) > 1) {
         xwgt <- as.numeric(xwgt[, 1])
         warning("Only first column of argument 'xwgt' is used\n",
-            call. = FALSE)
+                call. = FALSE)
     }
     dat <- .check_regression(formula, design, var, xwgt, na.rm)
     # add a 'reduced' survey.design2 object
@@ -68,7 +69,7 @@ svyreg_tukeyGM <- function(formula, design, k, type = c("Mallows", "Schweppe"),
             class = "svyreg_rob"))
     # otherwise
     res <- robsvyreg(dat$x, dat$y, dat$w, k, 2, type_int, dat$xwgt, dat$var,
-        verbose, ...)
+                     verbose, ...)
     res$design <- dat$design
     res$terms <- dat$terms
     res$call <- match.call()
