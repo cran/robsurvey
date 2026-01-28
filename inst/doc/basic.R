@@ -18,14 +18,14 @@ attach(losdata)
 head(losdata, 3)
 
 ## ----eval = FALSE-------------------------------------------------------------
-#  library("survey")
+# library("survey")
 
 ## ----echo = FALSE-------------------------------------------------------------
 suppressPackageStartupMessages(library(survey))
 
 ## ----eval = FALSE-------------------------------------------------------------
-#  dn <- svydesign(ids = ~1, fpc = ~fpc, weights = ~weight, data = losdata,
-#                  calibrate.formula = ~1)
+# dn <- svydesign(ids = ~1, fpc = ~fpc, weights = ~weight, data = losdata,
+#                 calibrate.formula = ~1)
 
 ## ----echo = FALSE-------------------------------------------------------------
 dn <- if (packageVersion("survey") >= "4.2") {
@@ -105,7 +105,7 @@ m
 summary(m)
 
 ## ----eval = FALSE-------------------------------------------------------------
-#  plot(residuals(m), robweights(m))
+# plot(residuals(m), robweights(m))
 
 ## ----echo = FALSE, out.width = "50%"------------------------------------------
 par(mar = c(4, 4, 1, 0))

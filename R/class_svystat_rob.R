@@ -6,7 +6,6 @@
 #     + psi: [int]
 #     + psi_fun: [char]
 #     + k: [numeric]
-#     + domain: [logical]
 #  + estimate: [numeric] vector of estimated regression coefficients
 #  + scale: [numeric] scale estimate
 #  + robust [list]
@@ -32,11 +31,11 @@
 #  + call: [call object]
 #
 # constructor for empty object of class svystat_rob
-.new_svystat_rob <- function(characteristic, yname, string, domain,
-                             design, call, class = NULL, ...)
+.new_svystat_rob <- function(characteristic, yname, string, design, call,
+                             class = NULL, ...)
 {
     structure(list(characteristic = characteristic,
-        estimator = list(string = string, domain = domain, ...),
+        estimator = list(string = string, ...),
         estimate = setNames(NA, yname), variance = NA, residuals = NA,
         model = NA, design = design, call = call),
         class = c("svystat_rob", class))
@@ -113,7 +112,7 @@ robweights.svystat_rob <- function(object)
     robwgt <- object$robust$robweights
     if (is.null(robwgt))
         stop("Robustness weights are not available\n")
-    else 
+    else
         robwgt
 }
 # print method for robust survey statistic object
@@ -175,4 +174,38 @@ mse.svystat_rob <- function(object, ...)
     }
     # mse
     as.numeric(object$variance + (object$estimate - ref)^2)
+}
+# confidence interval
+confint.svystat_rob <- function(object, parm, level = 0.95, df = Inf, ...)
+{
+    cf <- coef(object)
+    if (is.matrix(cf)) {
+        pnames <- sapply(X = colnames(cf), FUN = function(x)
+                         paste(rownames(cf), x, sep = "_"), simplify = TRUE)
+        pnames <- as.vector(pnames)
+        cf <- as.vector(cf)
+        names(cf) <- pnames
+    } else {
+        pnames <- names(cf)
+    }
+
+    if (missing(parm))
+        parm <- pnames
+    else if (is.numeric(parm))
+        parm <- pnames[parm]
+
+    a <- (1 - level)/2
+    a <- c(a, 1 - a)
+    pct <- paste(format(100 * a, trim = TRUE, scientific = FALSE, digits = 3),
+                 "%")
+    fac <- qt(a, df = df)
+    ci <- array(NA, dim = c(length(parm), 2L), dimnames = list(parm, pct))
+
+    ses <- if (!is.matrix(cf))
+        unlist(SE.svystat_rob(object))[parm %in% pnames]
+    else
+        as.vector(SE.svystat_rob(object))[parm %in% pnames]
+
+    ci[] <- cf[parm] + ses %o% fac
+    ci
 }

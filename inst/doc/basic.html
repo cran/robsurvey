@@ -1603,8 +1603,8 @@ about the estimate. The summary is particularly useful for
 <span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a></span>
 <span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a>Sampling design<span class="sc">:</span></span>
 <span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a>Independent Sampling design</span>
-<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a><span class="fu">svydesign</span>(<span class="at">ids =</span> <span class="sc">~</span><span class="dv">1</span>, <span class="at">fpc =</span> <span class="sc">~</span>fpc, <span class="at">weights =</span> <span class="sc">~</span>weight, <span class="at">data =</span> losdata,</span>
-<span id="cb10-10"><a href="#cb10-10" tabindex="-1"></a>                  <span class="at">calibrate.formula =</span> <span class="sc">~</span><span class="dv">1</span>)</span></code></pre></div>
+<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a><span class="fu">svydesign</span>(<span class="at">ids =</span> <span class="sc">~</span><span class="dv">1</span>, <span class="at">fpc =</span> <span class="sc">~</span>fpc, <span class="at">weights =</span> <span class="sc">~</span>weight, <span class="at">data =</span> losdata, </span>
+<span id="cb10-10"><a href="#cb10-10" tabindex="-1"></a>    <span class="at">calibrate.formula =</span> <span class="sc">~</span><span class="dv">1</span>)</span></code></pre></div>
 <p>Additional utility functions are <code>residuals()</code>,
 <code>fitted()</code>, and <code>robweights()</code>. These functions
 are mainly relevant for <em>M</em>-estimators.</p>
@@ -1909,8 +1909,8 @@ about the <em>M</em>-estimate</p>
 <span id="cb17-14"><a href="#cb17-14" tabindex="-1"></a></span>
 <span id="cb17-15"><a href="#cb17-15" tabindex="-1"></a>Sampling design<span class="sc">:</span></span>
 <span id="cb17-16"><a href="#cb17-16" tabindex="-1"></a>Independent Sampling design</span>
-<span id="cb17-17"><a href="#cb17-17" tabindex="-1"></a><span class="fu">svydesign</span>(<span class="at">ids =</span> <span class="sc">~</span><span class="dv">1</span>, <span class="at">fpc =</span> <span class="sc">~</span>fpc, <span class="at">weights =</span> <span class="sc">~</span>weight, <span class="at">data =</span> losdata,</span>
-<span id="cb17-18"><a href="#cb17-18" tabindex="-1"></a>                  <span class="at">calibrate.formula =</span> <span class="sc">~</span><span class="dv">1</span>)</span></code></pre></div>
+<span id="cb17-17"><a href="#cb17-17" tabindex="-1"></a><span class="fu">svydesign</span>(<span class="at">ids =</span> <span class="sc">~</span><span class="dv">1</span>, <span class="at">fpc =</span> <span class="sc">~</span>fpc, <span class="at">weights =</span> <span class="sc">~</span>weight, <span class="at">data =</span> losdata, </span>
+<span id="cb17-18"><a href="#cb17-18" tabindex="-1"></a>    <span class="at">calibrate.formula =</span> <span class="sc">~</span><span class="dv">1</span>)</span></code></pre></div>
 <p>The estimated scale (weighted MAD) can be extracted with the
 <code>scale()</code> function. Additional utility functions are
 <code>coef()</code>, <code>vcov()</code>, <code>SE()</code>,

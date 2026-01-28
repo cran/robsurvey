@@ -1616,8 +1616,8 @@ about the estimate.</p>
 <span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a></span>
 <span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a>Sampling design<span class="sc">:</span></span>
 <span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a>Stratified Independent Sampling design</span>
-<span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a><span class="fu">svydesign</span>(<span class="at">ids =</span> <span class="sc">~</span>ID, <span class="at">strata =</span> <span class="sc">~</span>strat, <span class="at">fpc =</span> <span class="sc">~</span>fpc, <span class="at">weights =</span> <span class="sc">~</span>weight,</span>
-<span id="cb8-18"><a href="#cb8-18" tabindex="-1"></a>                  <span class="at">data =</span> workplace, <span class="at">calibrate.formula =</span> <span class="sc">~-</span><span class="dv">1</span> <span class="sc">+</span> strat)</span></code></pre></div>
+<span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a><span class="fu">svydesign</span>(<span class="at">ids =</span> <span class="sc">~</span>ID, <span class="at">strata =</span> <span class="sc">~</span>strat, <span class="at">fpc =</span> <span class="sc">~</span>fpc, <span class="at">weights =</span> <span class="sc">~</span>weight, </span>
+<span id="cb8-18"><a href="#cb8-18" tabindex="-1"></a>    <span class="at">data =</span> workplace, <span class="at">calibrate.formula =</span> <span class="sc">~-</span><span class="dv">1</span> <span class="sc">+</span> strat)</span></code></pre></div>
 <p>The estimated location, variance, and standard error can be extracted
 from object <code>m</code> with the following commands.</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">coef</span>(m)</span>

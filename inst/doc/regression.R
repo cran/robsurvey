@@ -8,8 +8,8 @@ knitr::opts_chunk$set(
 )
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  library("robsurvey", quietly = TRUE)
-#  library("survey")
+# library("robsurvey", quietly = TRUE)
+# library("survey")
 
 ## ----echo = FALSE-------------------------------------------------------------
 library(robsurvey, quietly = TRUE)
@@ -36,9 +36,9 @@ data(counties)
 head(counties, 3)
 
 ## ----eval = FALSE-------------------------------------------------------------
-#  dn <- svydesign(ids = ~1, fpc = ~fpc, weights = ~weights,
-#                  data = counties[counties$farmpop > 0, ],
-#                  calibrate.formula = ~1)
+# dn <- svydesign(ids = ~1, fpc = ~fpc, weights = ~weights,
+#                 data = counties[counties$farmpop > 0, ],
+#                 calibrate.formula = ~1)
 
 ## ----echo = FALSE-------------------------------------------------------------
 dn <- if (packageVersion("survey") >= "4.2") {

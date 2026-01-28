@@ -17,14 +17,14 @@ attach(workplace)
 head(workplace, 3)
 
 ## ----eval = FALSE-------------------------------------------------------------
-#  library("survey")
+# library("survey")
 
 ## ----echo = FALSE-------------------------------------------------------------
 suppressPackageStartupMessages(library(survey))
 
 ## ----eval = FALSE-------------------------------------------------------------
-#  dn <- svydesign(ids = ~ID, strata = ~strat, fpc = ~fpc, weights = ~weight,
-#                  data = workplace, calibrate.formula = ~-1 + strat)
+# dn <- svydesign(ids = ~ID, strata = ~strat, fpc = ~fpc, weights = ~weight,
+#                 data = workplace, calibrate.formula = ~-1 + strat)
 
 ## ----echo = FALSE-------------------------------------------------------------
 dn <- if (packageVersion("survey") >= "4.2") {
@@ -83,7 +83,7 @@ SE(m)
 scale(m)
 
 ## ----eval = FALSE-------------------------------------------------------------
-#  plot(residuals(m), robweights(m))
+# plot(residuals(m), robweights(m))
 
 ## ----echo = FALSE, out.width = "50%"------------------------------------------
 par(mar = c(5, 4, 1, 0))

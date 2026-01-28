@@ -2,21 +2,15 @@
 svymean_winsorized <- function(x, design, LB = 0.05, UB = 1 - LB,
                                na.rm = FALSE, trim_var = FALSE, ...)
 {
-    if (!is.language(x))
-        stop("Argument 'x' must be a formula object\n", call. = FALSE)
     dat <- .check_formula(x, design, na.rm)
     # in the presence of NA's
     if (dat$failure)
         return(.new_svystat_rob("mean", dat$yname,
             paste0("Weighted winsorized estimator (", LB, ", ", UB, ")"),
-            dat$domain, dat$design, match.call(), "wins", LB = LB, UB = UB))
+            dat$design, match.call(), "wins", LB = LB, UB = UB))
 
-    # population- vs. domain-level estimate
-    res <- if (dat$domain)
-        weighted_mean_winsorized(dat$y[dat$in_domain], dat$w[dat$in_domain],
-                                 LB, UB, TRUE, FALSE)
-    else
-        weighted_mean_winsorized(dat$y, dat$w, LB, UB, TRUE, FALSE)
+    # population- vs. domain-level estimate (matters for calibrated designs)
+    res <- weighted_mean_winsorized(dat$y, dat$w, LB, UB, TRUE, FALSE)
 
     # influence function
     infl <- if (trim_var)
@@ -25,8 +19,8 @@ svymean_winsorized <- function(x, design, LB = 0.05, UB = 1 - LB,
         .infl_winsorized(res$model$y, res$model$w, LB, UB, res$estimate)
 
     infl <- infl * res$model$w / sum(res$model$w)
-    if (dat$domain) {
-        tmp <- numeric(dat$n)
+    if (dat$calibrated) {
+        tmp <- numeric(length(dat$in_domain))
         tmp[dat$in_domain] <- infl
         infl <- tmp
     }
@@ -37,7 +31,6 @@ svymean_winsorized <- function(x, design, LB = 0.05, UB = 1 - LB,
                               postStrata = design$postStrata)
     # return
     names(res$estimate) <- dat$yname
-    res$estimator$domain <- dat$domain
     res$design <- dat$design
     res$call <- match.call()
     class(res) <- "svystat_rob"
@@ -47,21 +40,15 @@ svymean_winsorized <- function(x, design, LB = 0.05, UB = 1 - LB,
 svymean_k_winsorized <- function(x, design, k, na.rm = FALSE,
                                  trim_var = FALSE, ...)
 {
-    if (!is.language(x))
-        stop("Argument 'x' must be a formula object\n", call. = FALSE)
     dat <- .check_formula(x, design, na.rm)
     # in the presence of NA's
     if (dat$failure)
         return(.new_svystat_rob("mean", dat$yname,
             paste0("Weighted winsorized estimator (", "k = ", k),
-            dat$domain, dat$design, match.call(), "wins", k = k))
+            dat$design, match.call(), "wins", k = k))
 
-    # population- vs. domain-level estimate
-    res <- if (dat$domain)
-        weighted_mean_k_winsorized(dat$y[dat$in_domain], dat$w[dat$in_domain],
-                                   k, TRUE, FALSE)
-    else
-        weighted_mean_k_winsorized(dat$y, dat$w, k, TRUE, FALSE)
+    # population- vs. domain-level estimate (matters for calibrated designs)
+    res <- weighted_mean_k_winsorized(dat$y, dat$w, k, TRUE, FALSE)
 
     # influence function
     infl <- if (trim_var)
@@ -72,8 +59,8 @@ svymean_k_winsorized <- function(x, design, k, na.rm = FALSE,
                          res$estimate)
 
     infl <- infl * res$model$w / sum(res$model$w)
-    if (dat$domain) {
-        tmp <- numeric(dat$n)
+    if (dat$calibrated) {
+        tmp <- numeric(length(dat$in_domain))
         tmp[dat$in_domain] <- infl
         infl <- tmp
     }
@@ -84,7 +71,6 @@ svymean_k_winsorized <- function(x, design, k, na.rm = FALSE,
                               postStrata = design$postStrata)
     # return
     names(res$estimate) <- dat$yname
-    res$estimator$domain <- dat$domain
     res$design <- dat$design
     res$call <- match.call()
     class(res) <- "svystat_rob"
@@ -94,21 +80,15 @@ svymean_k_winsorized <- function(x, design, k, na.rm = FALSE,
 svytotal_winsorized <- function(x, design, LB = 0.05, UB = 1 - LB,
                                 na.rm = FALSE, trim_var = FALSE, ...)
 {
-    if (!is.language(x))
-        stop("Argument 'x' must be a formula object\n", call. = FALSE)
     dat <- .check_formula(x, design, na.rm)
     # in the presence of NA's
     if (dat$failure)
         return(.new_svystat_rob("total", dat$yname,
             paste0("Weighted winsorized estimator (", LB, ", ", UB, ")"),
-            dat$domain, dat$design, match.call(), "wins", LB = LB, UB = UB))
+            dat$design, match.call(), "wins", LB = LB, UB = UB))
 
-    # population- vs. domain-level estimate
-    res <- if (dat$domain)
-        weighted_total_winsorized(dat$y[dat$in_domain], dat$w[dat$in_domain],
-                                  LB, UB, TRUE, FALSE)
-    else
-        weighted_total_winsorized(dat$y, dat$w, LB, UB, TRUE, FALSE)
+    # population- vs. domain-level estimate (matters for calibrated designs)
+    res <- weighted_total_winsorized(dat$y, dat$w, LB, UB, TRUE, FALSE)
 
     # influence function
     infl <- if (trim_var)
@@ -117,8 +97,8 @@ svytotal_winsorized <- function(x, design, LB = 0.05, UB = 1 - LB,
         .infl_winsorized(res$model$y, res$model$w, LB, UB, 0)
 
     infl <- infl * res$model$w
-    if (dat$domain) {
-        tmp <- numeric(dat$n)
+    if (dat$calibrated) {
+        tmp <- numeric(length(dat$in_domain))
         tmp[dat$in_domain] <- infl
         infl <- tmp
     }
@@ -129,7 +109,6 @@ svytotal_winsorized <- function(x, design, LB = 0.05, UB = 1 - LB,
                               postStrata = design$postStrata)
     # return
     names(res$estimate) <- dat$yname
-    res$estimator$domain <- dat$domain
     res$design <- dat$design
     res$call <- match.call()
     class(res) <- "svystat_rob"
@@ -139,21 +118,15 @@ svytotal_winsorized <- function(x, design, LB = 0.05, UB = 1 - LB,
 svytotal_k_winsorized <- function(x, design, k, na.rm = FALSE,
                                   trim_var = FALSE, ...)
 {
-    if (!is.language(x))
-        stop("Argument 'x' must be a formula object\n", call. = FALSE)
     dat <- .check_formula(x, design, na.rm)
     # in the presence of NA's
     if (dat$failure)
         return(.new_svystat_rob("total", dat$yname,
             paste0("Weighted winsorized estimator (", "k = ", k),
-            dat$domain, dat$design, match.call(), "wins", k = k))
+            dat$design, match.call(), "wins", k = k))
 
-    # population- vs. domain-level estimate
-    res <- if (dat$domain)
-        weighted_total_k_winsorized(dat$y[dat$in_domain], dat$w[dat$in_domain],
-                                    k, TRUE, FALSE)
-    else
-        weighted_total_k_winsorized(dat$y, dat$w, k, TRUE, FALSE)
+    # population- vs. domain-level estimate(matters for calibrated designs )
+    res <- weighted_total_k_winsorized(dat$y, dat$w, k, TRUE, FALSE)
 
     # influence function
     infl <- if (trim_var)
@@ -162,8 +135,8 @@ svytotal_k_winsorized <- function(x, design, k, na.rm = FALSE,
         .infl_winsorized(res$model$y, res$model$w, 0, res$estimator$UB, 0)
 
     infl <- infl * res$model$w
-    if (dat$domain) {
-        tmp <- numeric(dat$n)
+    if (dat$calibrated) {
+        tmp <- numeric(length(dat$in_domain))
         tmp[dat$in_domain] <- infl
         infl <- tmp
     }
@@ -174,7 +147,6 @@ svytotal_k_winsorized <- function(x, design, k, na.rm = FALSE,
                               postStrata = design$postStrata)
     # return
     names(res$estimate) <- dat$yname
-    res$estimator$domain <- dat$domain
     res$design <- dat$design
     res$call <- match.call()
     class(res) <- "svystat_rob"

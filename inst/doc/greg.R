@@ -8,9 +8,9 @@ knitr::opts_chunk$set(
 )
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  library("robsurvey", quietly = TRUE)
-#  library("survey")
-#  data("MU284pps")
+# library("robsurvey", quietly = TRUE)
+# library("survey")
+# data("MU284pps")
 
 ## ----echo = FALSE-------------------------------------------------------------
 library(robsurvey, quietly = TRUE)
@@ -33,8 +33,8 @@ i.e., the default specification.<p>
 }
 
 ## ----eval = FALSE-------------------------------------------------------------
-#  dn <- svydesign(ids = ~LABEL, fpc = ~pi, data = MU284pps, pps = "brewer",
-#                  calibrate = ~1)
+# dn <- svydesign(ids = ~LABEL, fpc = ~pi, data = MU284pps, pps = "brewer",
+#                 calibrate = ~1)
 
 ## ----echo = FALSE-------------------------------------------------------------
 dn <- if (packageVersion("survey") >= "4.2") {
